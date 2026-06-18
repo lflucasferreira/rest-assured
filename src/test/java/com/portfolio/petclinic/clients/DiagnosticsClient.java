@@ -5,18 +5,16 @@ import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
 
-public class PetTypesClient extends ApiClient {
+public class DiagnosticsClient extends ApiClient {
 
-    private static final String PET_TYPES_PATH = "/pettypes";
-
-    public PetTypesClient(Filter... additionalFilters) {
+    public DiagnosticsClient(Filter... additionalFilters) {
         super(additionalFilters);
     }
 
-    public Response getAllPetTypes() {
+    public Response triggerFailingEndpoint() {
         return given()
                 .spec(requestSpec)
                 .when()
-                .get(PET_TYPES_PATH);
+                .get("/oops");
     }
 }

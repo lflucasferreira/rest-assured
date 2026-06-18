@@ -1,9 +1,12 @@
 package com.portfolio.petclinic.base;
 
+import com.portfolio.petclinic.clients.DiagnosticsClient;
 import com.portfolio.petclinic.clients.OwnersClient;
 import com.portfolio.petclinic.clients.PetTypesClient;
 import com.portfolio.petclinic.clients.PetsClient;
+import com.portfolio.petclinic.clients.VisitsClient;
 import com.portfolio.petclinic.utils.ConfigLoader;
+import com.portfolio.petclinic.utils.filters.NetworkCaptureFilter;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +17,12 @@ public abstract class BaseTest {
 
     protected static final Logger LOG = LoggerFactory.getLogger(BaseTest.class);
 
+    protected NetworkCaptureFilter networkCapture;
     protected OwnersClient ownersClient;
     protected PetsClient petsClient;
     protected PetTypesClient petTypesClient;
+    protected VisitsClient visitsClient;
+    protected DiagnosticsClient diagnosticsClient;
 
     @BeforeAll
     static void configureRestAssured() {
@@ -29,8 +35,11 @@ public abstract class BaseTest {
 
     @BeforeEach
     void initClients() {
-        ownersClient = new OwnersClient();
-        petsClient = new PetsClient();
-        petTypesClient = new PetTypesClient();
+        networkCapture = new NetworkCaptureFilter();
+        ownersClient = new OwnersClient(networkCapture);
+        petsClient = new PetsClient(networkCapture);
+        petTypesClient = new PetTypesClient(networkCapture);
+        visitsClient = new VisitsClient(networkCapture);
+        diagnosticsClient = new DiagnosticsClient(networkCapture);
     }
 }

@@ -22,6 +22,7 @@
         <javafaker.version>1.0.2</javafaker.version>
         <slf4j.version>2.0.16</slf4j.version>
         <logback.version>1.5.12</logback.version>
+        <wiremock.version>3.9.1</wiremock.version>
 
         <env>dev</env>
         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
@@ -98,6 +99,13 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -134,10 +134,13 @@ class PetsApiTest extends BaseTest {
         // When: updating the pet
         Response updateResponse = petsClient.updatePet(createdPet.getId(), updatePayload);
 
-        // Then: pet is updated
-        ResponseValidator.assertStatusCode(updateResponse.getStatusCode(), 200);
+        // Then: pet is updated (API returns 204 No Content)
+        ResponseValidator.assertStatusCode(updateResponse.getStatusCode(), 204);
 
-        Pet updatedPet = updateResponse.as(Pet.class);
+        Response getResponse = petsClient.getPetById(createdPet.getId());
+        ResponseValidator.assertStatusCode(getResponse.getStatusCode(), 200);
+
+        Pet updatedPet = getResponse.as(Pet.class);
         assertThat(updatedPet.getId(), is(createdPet.getId()));
         assertThat(updatedPet.getName(), is(updatedName));
 
@@ -155,8 +158,8 @@ class PetsApiTest extends BaseTest {
         // When: deleting the pet
         Response deleteResponse = petsClient.deletePet(createdPet.getId());
 
-        // Then: pet is removed and no longer retrievable
-        ResponseValidator.assertStatusCode(deleteResponse.getStatusCode(), 200);
+        // Then: pet is removed and no longer retrievable (API returns 204 No Content)
+        ResponseValidator.assertStatusCode(deleteResponse.getStatusCode(), 204);
 
         Response getResponse = petsClient.getPetById(createdPet.getId());
         assertThat(getResponse.getStatusCode(), is(404));

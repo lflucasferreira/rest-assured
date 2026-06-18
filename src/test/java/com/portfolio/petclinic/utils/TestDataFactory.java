@@ -5,6 +5,7 @@ import com.portfolio.petclinic.models.Owner;
 import com.portfolio.petclinic.models.Pet;
 import com.portfolio.petclinic.models.PetFields;
 import com.portfolio.petclinic.models.PetType;
+import com.portfolio.petclinic.models.VisitFields;
 
 import java.time.LocalDate;
 import java.util.Locale;
@@ -43,6 +44,19 @@ public final class TestDataFactory {
         pet.setType(existingPet.getType());
         pet.setOwnerId(existingPet.getOwnerId());
         return pet;
+    }
+
+    public static VisitFields buildVisitFields() {
+        VisitFields visitFields = new VisitFields();
+        visitFields.setDate(LocalDate.now().minusDays(1));
+        visitFields.setDescription("Routine checkup - " + FAKER.lorem().word());
+        return visitFields;
+    }
+
+    public static Owner buildInvalidOwnerWithAlphabeticTelephone() {
+        Owner owner = buildOwner();
+        owner.setTelephone("NOT-A-PHONE");
+        return owner;
     }
 
     private static String sanitizeName(String value) {

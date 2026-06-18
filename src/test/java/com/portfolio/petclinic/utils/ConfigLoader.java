@@ -56,4 +56,8 @@ public final class ConfigLoader {
     public static boolean isLoggingEnabled() {
         return Boolean.parseBoolean(PROPERTIES.getProperty("logging.enabled", "true"));
     }
+
+    public static long getMaxResponseTimeMs() {
+        return Long.parseLong(PROPERTIES.getProperty("api.response.time.max.ms", "5000"));
+    }
 }

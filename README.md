@@ -19,6 +19,9 @@ This project demonstrates a scalable API testing architecture suitable for QA au
     │   ├── clients/        # API client layer
     │   ├── models/         # Request/response POJOs
     │   ├── tests/          # JUnit test suites
+    │   │   ├── advanced/   # Network capture, WireMock, contracts
+    │   │   ├── flows/      # End-to-end business flows
+    │   │   └── negative/   # Parameterized negative scenarios
     │   └── utils/          # Config, data factory, validators
     └── resources/
         ├── config/         # Environment-specific properties
@@ -97,6 +100,16 @@ mvn allure:serve
 | PUT | `/pets/{id}` | `PetsApiTest` |
 | DELETE | `/pets/{id}` | `PetsApiTest` |
 
+### Advanced QA coverage
+
+| Area | Test Class | Techniques |
+|------|------------|------------|
+| Network interception | `NetworkInspectionTest` | Custom `Filter`, JsonPath, SLA (`time()`) |
+| External mocks | `WireMockNotificationTest` | WireMock stubs, verify, fault injection |
+| HTTP contracts | `ContractAndCachingTest` | Security headers, RFC 7807, conditional GET |
+| Negative paths | `*NegativeApiTest` | `@ParameterizedTest`, optional error schema |
+| E2E flows | `PetLifecycleFlowTest` | Multi-step orchestration + call-chain validation |
+
 > Note: Pet creation in Petclinic REST is exposed as `POST /owners/{ownerId}/pets` (not `POST /pets`).
 
 ## Technologies Used
@@ -108,6 +121,7 @@ mvn allure:serve
 - Hamcrest
 - Jackson
 - JavaFaker
+- WireMock
 - Allure Report
 - Docker / Docker Compose
 - GitLab CI
