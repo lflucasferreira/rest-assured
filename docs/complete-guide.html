@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rest Assured — Complete Guide (Setup &amp; Commands)</title>
+    <meta name="description" content="Step-by-step: Rest Assured API testing, Maven setup, clients, schemas, WireMock, and CI." />
+    <link rel="icon" href="slides/assets/rest-assured-logo.svg" type="image/svg+xml" />
+    <script>
+      (function () {
+        var path = location.pathname
+        var last = path.split('/').filter(Boolean).pop() || ''
+        if (/\.html?$/i.test(last)) return
+        var docsIdx = path.indexOf('/docs/')
+        if (docsIdx !== -1) {
+          var b = document.createElement('base')
+          b.href = path.substring(0, docsIdx + '/docs/'.length)
+          document.head.appendChild(b)
+          return
+        }
+        var base = path.replace(/\/[^/]+$/, '/')
+        if (!base.endsWith('/')) base += '/'
+        var b = document.createElement('base')
+        b.href = base
+        document.head.appendChild(b)
+      })()
+    </script>
+    <script>
+      (function () {
+        var k = 'pw-docs-theme'
+        var t = localStorage.getItem(k)
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        }
+        document.documentElement.setAttribute('data-theme', t)
+      })()
+    </script>
+    <link id="hljs-theme" rel="stylesheet" href="../node_modules/highlight.js/styles/github-dark.css" />
+    <link rel="stylesheet" href="slides/css/themes.css" />
+    <link rel="stylesheet" href="slides/css/theme-toggle.css" />
+    <link rel="stylesheet" href="slides/css/guide.css" />
+    <link rel="stylesheet" href="slides/css/theme-light.css" />
+    <link rel="stylesheet" href="slides/css/icons.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html">
+        <img src="slides/assets/rest-assured-logo.svg" alt="Rest Assured" width="28" height="28" />
+        Rest Assured — Complete Guide
+      </a>
+      <nav class="header-links">
+        <a href="index.html">Home</a>
+        <a href="slides/index.html">Slides</a>
+        <a href="guia-completo.html">Português</a>
+        <a href="https://rest-assured.io/" target="_blank" rel="noopener">Official docs</a>
+        <a class="nav-github" href="https://github.com/lflucasferreira/rest-assured" target="_blank" rel="noopener">
+          <img src="slides/assets/icons/github.svg" alt="" width="18" height="18" aria-hidden="true" />
+          GitHub
+        </a>
+        <button type="button" class="theme-toggle" aria-label="Toggle theme">
+          <span class="theme-toggle-icon theme-toggle-icon--dark" aria-hidden="true">☀</span>
+          <span class="theme-toggle-icon theme-toggle-icon--light" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Table of contents">
+        <h2>Introduction</h2>
+        <ul>
+          <li><a href="#what-is">What is Rest Assured</a></li>
+          <li><a href="#prerequisites">Prerequisites</a></li>
+          <li><a href="#installation">Installation</a></li>
+          <li><a href="#structure">Project structure</a></li>
+        </ul>
+        <h2>Core patterns</h2>
+        <ul>
+          <li><a href="#clients">API clients</a></li>
+          <li><a href="#base-test">BaseTest setup</a></li>
+          <li><a href="#assertions">Assertions &amp; schemas</a></li>
+          <li><a href="#test-data">Test data factory</a></li>
+        </ul>
+        <h2>Advanced</h2>
+        <ul>
+          <li><a href="#network">Network capture</a></li>
+          <li><a href="#wiremock">WireMock</a></li>
+          <li><a href="#parameterized">Parameterized tests</a></li>
+        </ul>
+        <h2>Wrap-up</h2>
+        <ul>
+          <li><a href="#run-tests">How to run</a></li>
+          <li><a href="#ci">CI GitHub Actions</a></li>
+          <li><a href="#training-docs">Training docs</a></li>
+        </ul>
+      </aside>
+
+      <main>
+        <header class="hero">
+          <div class="hero-logo">
+            <img src="slides/assets/rest-assured-logo.svg" alt="Rest Assured" width="64" height="64" />
+            <span class="wordmark">Rest Assured</span>
+          </div>
+          <h1>Rest Assured — Step-by-step guide</h1>
+          <p class="subtitle">
+            From zero to full reference: Maven setup, client layer, JSON schemas, WireMock, flows, and CI.
+          </p>
+          <span class="badge">API · Java 17 · Spring Petclinic REST</span>
+        </header>
+
+        <section id="what-is">
+          <h2>What is Rest Assured?</h2>
+          <p>
+            Rest Assured is a Java DSL for testing REST APIs. It integrates with JUnit 5, Hamcrest matchers,
+            Jackson POJO mapping, and Allure reporting — ideal for contract and integration tests.
+          </p>
+          <ul>
+            <li>BDD-style syntax: <code>given()</code> · <code>when()</code> · <code>then()</code></li>
+            <li>JsonPath extraction without full object mapping</li>
+            <li>JSON schema validation via Rest Assured JSON Schema Validator</li>
+            <li>Filters for logging, SLA checks, and custom network capture</li>
+          </ul>
+        </section>
+
+        <section id="prerequisites">
+          <h2>Prerequisites</h2>
+          <ul class="tool-list">
+            <li><img src="slides/assets/icons/nodedotjs.svg" alt="" class="tool-icon" width="20" height="20" aria-hidden="true" /><span><strong>Java 17+</strong></span></li>
+            <li><img src="slides/assets/icons/docker.svg" alt="" class="tool-icon" width="20" height="20" aria-hidden="true" /><span><strong>Docker</strong> (recommended)</span></li>
+            <li><img src="slides/assets/icons/github.svg" alt="" class="tool-icon" width="20" height="20" aria-hidden="true" /><span><strong>Maven 3.9+</strong></span></li>
+          </ul>
+          <pre><code class="language-bash">java -version
+mvn -version
+docker --version</code></pre>
+        </section>
+
+        <section id="installation">
+          <h2>Installation &amp; first run</h2>
+          <pre><code class="language-bash">git clone https://github.com/lflucasferreira/rest-assured.git
+cd rest-assured
+
+# Option A — Docker (API + tests)
+docker compose up --abort-on-container-exit --exit-code-from tests
+
+# Option B — local Maven (start API first)
+docker run -p 9966:9966 springcommunity/spring-petclinic-rest:latest
+mvn clean test</code></pre>
+        </section>
+
+        <section id="structure">
+          <h2>Project structure</h2>
+          <pre><code class="language-text">src/test/java/com/portfolio/petclinic/
+├── base/BaseTest.java          # Shared clients &amp; request spec
+├── clients/                    # HTTP client layer
+├── models/                     # POJOs
+├── tests/
+│   ├── OwnersApiTest.java
+│   ├── PetsApiTest.java
+│   ├── advanced/               # WireMock, contracts, network
+│   ├── flows/                  # Multi-step orchestration
+│   └── negative/               # Parameterized error paths
+└── utils/                      # Config, factories, validators
+
+src/test/resources/
+├── config/dev.properties
+└── schemas/*.json</code></pre>
+        </section>
+
+        <section id="clients">
+          <h2>API client layer</h2>
+          <p>All HTTP calls go through client classes. See <a href="api-testing-strategy.md">api-testing-strategy.md</a>.</p>
+          <pre><code class="language-java">public class OwnersClient extends ApiClient {
+    public Response getAllOwners() {
+        return given().spec(requestSpec).when().get("/owners");
+    }
+    public Response createOwner(Owner owner) {
+        return given().spec(requestSpec).body(owner).when().post("/owners");
+    }
+}</code></pre>
+        </section>
+
+        <section id="base-test">
+          <h2>BaseTest setup</h2>
+          <pre><code class="language-java">@BeforeEach
+void setUp() {
+    RestAssured.requestSpecification = requestSpec;
+    networkCapture.reset();
+}</code></pre>
+          <p><code>BaseTest</code> wires <code>OwnersClient</code>, <code>PetsClient</code>, <code>PetTypesClient</code>, <code>VisitsClient</code>, and the network capture filter.</p>
+        </section>
+
+        <section id="assertions">
+          <h2>Assertions &amp; JSON schemas</h2>
+          <pre><code class="language-java">ResponseValidator.assertStatusCode(response.getStatusCode(), 201);
+ResponseValidator.assertMatchesSchema(body, "schemas/owner-schema.json");
+
+Owner owner = response.as(Owner.class);
+assertThat(owner.getFirstName(), is(payload.getFirstName()));</code></pre>
+        </section>
+
+        <section id="test-data">
+          <h2>Test data factory</h2>
+          <pre><code class="language-java">Owner owner = TestDataFactory.buildOwner();
+PetFields pet = TestDataFactory.buildPetFields(typeId, typeName);
+Owner invalid = TestDataFactory.buildInvalidOwnerWithAlphabeticTelephone();</code></pre>
+          <p>JavaFaker generates unique data; negative factories encode invalid payloads.</p>
+        </section>
+
+        <section id="network">
+          <h2>Network capture</h2>
+          <pre><code class="language-java">NetworkInspector.attachLastExchangeToAllure(networkCapture);
+NetworkInspector.assertLastRequestUriContains(networkCapture, "/pets");
+NetworkInspector.assertResponseSequenceContains(networkCapture, "/owners", "/pets/");</code></pre>
+        </section>
+
+        <section id="wiremock">
+          <h2>WireMock</h2>
+          <pre><code class="language-java">wireMockSupport.server().stubFor(post(urlEqualTo("/audit/owner-created"))
+    .willReturn(aResponse().withStatus(202)));
+
+WireMock.verify(postRequestedFor(urlEqualTo("/audit/owner-created"))
+    .withRequestBody(equalToJson(expectedJson, true, true)));</code></pre>
+        </section>
+
+        <section id="parameterized">
+          <h2>Parameterized tests</h2>
+          <pre><code class="language-java">@ParameterizedTest(name = "GET /owners/{0} should return {1}")
+@CsvSource({ "99999, 404", "0, 404" })
+void shouldReturnExpectedStatusForInvalidOwnerIds(int ownerId, int expectedStatus) {
+    Response response = ownersClient.getOwnerById(ownerId);
+    ErrorResponseValidator.assertErrorStatusAndOptionalProblemDetail(...);
+}</code></pre>
+        </section>
+
+        <section id="run-tests">
+          <h2>How to run</h2>
+          <pre><code class="language-bash">mvn clean test
+mvn test -Dtest=OwnersApiTest
+mvn test -Denv=dev -Dapi.base.uri=http://localhost:9966/petclinic/api
+mvn allure:serve</code></pre>
+        </section>
+
+        <section id="ci">
+          <h2>CI — GitHub Actions</h2>
+          <p>Workflow <code>.github/workflows/api-tests.yml</code>:</p>
+          <ul>
+            <li>Service container: <code>springcommunity/spring-petclinic-rest:latest</code></li>
+            <li>Health check on Actuator <code>/actuator/health</code></li>
+            <li><code>mvn clean test</code> on every PR and push to <code>main</code></li>
+            <li>Allure report published to GitHub Pages on push to <code>main</code></li>
+          </ul>
+        </section>
+
+        <section id="training-docs">
+          <h2>Training documentation</h2>
+          <ul>
+            <li><a href="en/README.md">English walkthroughs</a> — block-by-block per test class</li>
+            <li><a href="pt/README.md">Walkthroughs em Português</a></li>
+            <li><a href="slides/index.html">Reveal.js slides</a></li>
+            <li><a href="rest-assured-technical-interview-questions.md">Interview questions (PT)</a></li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <script src="../node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script>hljs.highlightAll()</script>
+    <script src="slides/js/theme.js" data-base="../"></script>
+  </body>
+</html>

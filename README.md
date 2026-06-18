@@ -6,11 +6,14 @@ Production-quality API test automation framework for the [Spring Petclinic REST]
 
 This project demonstrates a scalable API testing architecture suitable for QA automation portfolios. It validates core Petclinic endpoints (owners and pets), uses reusable API clients, dynamic test data, JSON schema validation, Allure reporting, and Docker-based execution for local and CI environments.
 
+**Training documentation:** [`docs/`](docs/) — walkthroughs (EN/PT), slides, complete guides, and interview questions. Open [`docs/index.html`](docs/index.html) locally or run `npm run slides`.
+
 ## Folder Structure
 
 ```
 .
 ├── docker-compose.yml
+├── docs/                 # Training docs (walkthroughs, slides, guides)
 ├── .gitlab-ci.yml
 ├── pom.xml
 └── src/test/

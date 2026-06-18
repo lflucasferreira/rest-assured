@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rest Assured — Introdução &amp; Instalação</title>
+    <meta name="description" content="Apresentação introdutória sobre Rest Assured: API testing, clients, JUnit 5 e Spring Petclinic." />
+    <link rel="icon" href="assets/rest-assured-logo.svg" type="image/svg+xml" />
+    <script>
+      (function () {
+        var path = location.pathname
+        var last = path.split('/').filter(Boolean).pop() || ''
+        if (/\.html?$/i.test(last)) return
+        var base
+        var slidesIdx = path.indexOf('/slides')
+        if (slidesIdx !== -1) {
+          base = path.substring(0, slidesIdx + '/slides'.length) + '/'
+        } else {
+          base = path.replace(/\/index$/i, '')
+          if (!base.endsWith('/')) base += '/'
+        }
+        var b = document.createElement('base')
+        b.href = base
+        document.head.appendChild(b)
+      })()
+    </script>
+    <script>
+      (function () {
+        var k = 'pw-docs-theme'
+        var t = localStorage.getItem(k)
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        }
+        document.documentElement.setAttribute('data-theme', t)
+      })()
+    </script>
+    <link rel="stylesheet" href="../../node_modules/reveal.js/dist/reveal.css" />
+    <link id="reveal-theme" rel="stylesheet" href="../../node_modules/reveal.js/dist/theme/black.css" />
+    <link id="hljs-theme" rel="stylesheet" href="../../node_modules/highlight.js/styles/github-dark.css" />
+    <link rel="stylesheet" href="css/themes.css" />
+    <link rel="stylesheet" href="css/theme-toggle.css" />
+    <link rel="stylesheet" href="css/theme-rest-assured.css" />
+    <link rel="stylesheet" href="css/theme-light.css" />
+    <link rel="stylesheet" href="css/icons.css" />
+  </head>
+  <body>
+    <button type="button" class="theme-toggle theme-toggle--floating" aria-label="Toggle theme">
+      <span class="theme-toggle-icon theme-toggle-icon--dark" aria-hidden="true">☀</span>
+      <span class="theme-toggle-icon theme-toggle-icon--light" aria-hidden="true">☾</span>
+    </button>
+    <div class="footer-bar" aria-hidden="true"></div>
+
+    <div class="reveal">
+      <div class="slides">
+
+        <section class="slide-title" data-auto-animate>
+          <div class="logo-wrap">
+            <img src="assets/rest-assured-logo.svg" alt="Rest Assured" width="72" height="72" />
+            <span class="wordmark">Rest Assured</span>
+          </div>
+          <h1>Testes de API em Java</h1>
+          <p class="subtitle">Instalação, clients, schemas, WireMock e CI</p>
+          <span class="badge">Automação · Java 17 · Spring Petclinic REST</span>
+        </section>
+
+        <section>
+          <h2>O que é o Rest Assured?</h2>
+          <p class="fragment fade-up">
+            Biblioteca Java para testar APIs REST com DSL fluente —
+            integra com <strong>JUnit 5</strong>, <strong>Hamcrest</strong> e <strong>Allure</strong>.
+          </p>
+          <ul class="fragment fade-up">
+            <li>Sintaxe BDD: <code>given()</code> · <code>when()</code> · <code>then()</code></li>
+            <li>Validação JSON com JsonPath e schemas</li>
+            <li>POJO mapping com Jackson</li>
+            <li>Filtros para logging e captura de rede</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Stack do projeto</h2>
+          <div class="feature-grid">
+            <div class="feature-card fragment fade-up">
+              <h4 class="icon-heading"><img src="assets/icons/nodedotjs.svg" alt="" class="tool-icon" aria-hidden="true" /> Java 17</h4>
+              <p>Records, text blocks, modern language features.</p>
+            </div>
+            <div class="feature-card fragment fade-up">
+              <h4 class="icon-heading"><img src="assets/icons/docker.svg" alt="" class="tool-icon" aria-hidden="true" /> Docker</h4>
+              <p>API Petclinic + testes em containers isolados.</p>
+            </div>
+            <div class="feature-card fragment fade-up">
+              <h4 class="icon-heading"><img src="assets/icons/githubactions.svg" alt="" class="tool-icon" aria-hidden="true" /> GitHub Actions</h4>
+              <p>CI com service container e Allure no Pages.</p>
+            </div>
+            <div class="feature-card fragment fade-up">
+              <h4 class="icon-heading"><img src="assets/icons/allure.svg" alt="" class="tool-icon" aria-hidden="true" /> Allure</h4>
+              <p>@Epic, @Feature, @Story e anexos de rede.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Pré-requisitos</h2>
+          <ul>
+            <li class="fragment">Java 17+ e Maven 3.9+</li>
+            <li class="fragment">Docker (recomendado para API + testes)</li>
+            <li class="fragment">IDE: IntelliJ, VS Code ou Cursor</li>
+          </ul>
+          <pre class="fragment"><code class="language-bash">docker compose up --abort-on-container-exit --exit-code-from tests
+mvn clean test
+mvn allure:serve</code></pre>
+        </section>
+
+        <section>
+          <h2>Estrutura do projeto</h2>
+          <pre><code class="language-text">src/test/java/com/portfolio/petclinic/
+├── base/       BaseTest — setup compartilhado
+├── clients/    OwnersClient, PetsClient, ...
+├── models/     POJOs de request/response
+├── tests/      Suites JUnit 5
+│   ├── advanced/
+│   ├── flows/
+│   └── negative/
+└── utils/      ConfigLoader, TestDataFactory, validators</code></pre>
+        </section>
+
+        <section>
+          <h2>Client layer</h2>
+          <pre><code class="language-java">public Response getAllOwners() {
+    return given()
+        .spec(requestSpec)
+        .when()
+        .get("/owners");
+}</code></pre>
+          <p class="fragment">Specs nunca chamam <code>RestAssured.given()</code> diretamente — use clients.</p>
+        </section>
+
+        <section>
+          <h2>Primeiro teste</h2>
+          <pre><code class="language-java">@Test
+void shouldReturnAllOwnersWithValidStructure() {
+    Response response = ownersClient.getAllOwners();
+    ResponseValidator.assertStatusCode(response.getStatusCode(), 200);
+    ResponseValidator.assertFirstArrayItemMatchesSchema(
+        response.getBody().asString(), "schemas/owner-schema.json");
+}</code></pre>
+        </section>
+
+        <section>
+          <h2>Validação de schema</h2>
+          <ul>
+            <li class="fragment"><code>owner-schema.json</code> — respostas de owner</li>
+            <li class="fragment"><code>pet-schema.json</code> — respostas de pet</li>
+            <li class="fragment"><code>problem-detail-schema.json</code> — erros RFC 7807</li>
+          </ul>
+          <p class="fragment">Schemas em <code>src/test/resources/schemas/</code></p>
+        </section>
+
+        <section>
+          <h2>Dados dinâmicos</h2>
+          <pre><code class="language-java">Owner ownerPayload = TestDataFactory.buildOwner();
+PetFields pet = TestDataFactory.buildPetFields(typeId, typeName);</code></pre>
+          <p class="fragment">JavaFaker evita colisões e dados fixos em paralelo.</p>
+        </section>
+
+        <section>
+          <h2>Testes parametrizados</h2>
+          <pre><code class="language-java">@ParameterizedTest(name = "GET /owners/{0} should return {1}")
+@CsvSource({ "99999, 404", "0, 404" })
+void shouldReturnExpectedStatusForInvalidOwnerIds(int id, int status) {
+    Response response = ownersClient.getOwnerById(id);
+    ErrorResponseValidator.assertErrorStatusAndOptionalProblemDetail(...);
+}</code></pre>
+        </section>
+
+        <section>
+          <h2>Captura de rede</h2>
+          <pre><code class="language-java">NetworkInspector.attachLastExchangeToAllure(networkCapture);
+NetworkInspector.assertLastRequestUriContains(networkCapture, "/pets");
+NetworkInspector.assertResponseSequenceContains(networkCapture, "/owners", "/pets/");</code></pre>
+        </section>
+
+        <section>
+          <h2>WireMock</h2>
+          <ul>
+            <li class="fragment">Stub de webhook <code>/audit/owner-created</code></li>
+            <li class="fragment"><code>WireMock.verify()</code> com JSON exato</li>
+            <li class="fragment">Injeção de falha 503 para resiliência</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>CI — GitHub Actions</h2>
+          <ul>
+            <li class="fragment">Service container: <code>spring-petclinic-rest</code></li>
+            <li class="fragment">Health check via Actuator</li>
+            <li class="fragment"><code>mvn clean test -Dapi.base.uri=...</code></li>
+            <li class="fragment">Allure publicado no GitHub Pages em push para <code>main</code></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Documentação</h2>
+          <ul>
+            <li><a href="../index.html">Hub de documentação</a></li>
+            <li><a href="../en/README.md">Walkthroughs EN</a> · <a href="../pt/README.md">PT</a></li>
+            <li><a href="../complete-guide.html">Complete Guide</a></li>
+            <li><a href="../api-testing-strategy.md">API testing strategy</a></li>
+          </ul>
+        </section>
+
+        <section class="slide-title">
+          <h1>Obrigado!</h1>
+          <p class="subtitle">Execute a suite e explore os walkthroughs bloco a bloco.</p>
+          <span class="badge">github.com/lflucasferreira/rest-assured</span>
+        </section>
+
+      </div>
+    </div>
+
+    <script src="../../node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="../../node_modules/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="js/theme.js" data-base="../../"></script>
+    <script>
+      Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        plugins: [RevealHighlight],
+      })
+    </script>
+  </body>
+</html>

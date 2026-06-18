@@ -4,12 +4,17 @@
   "private": true,
   "description": "Rest Assured API test automation for Spring Petclinic REST",
   "scripts": {
+    "slides": "npx serve . -p 3335",
+    "slides:open": "npx serve . -p 3335 & sleep 1 && open http://localhost:3335/docs/",
     "report:allure": "node scripts/generate-allure-report.mjs",
     "allure:merge-results": "node scripts/merge-allure-results.mjs",
     "pages:prepare-allure": "node scripts/prepare-allure-for-pages.mjs",
     "pages:build": "node scripts/build-pages-site.mjs"
   },
   "devDependencies": {
-    "allure": "^3.11.0"
+    "allure": "^3.11.0",
+    "highlight.js": "^11.11.1",
+    "reveal.js": "^5.1.0",
+    "serve": "^14.2.4"
   }
 }

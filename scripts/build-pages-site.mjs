@@ -26,10 +26,108 @@ function copyDir(src, dest) {
   fs.cpSync(src, dest, { recursive: true })
 }
 
+function writeLegacyRedirect(destFile, target) {
+  fs.mkdirSync(path.dirname(destFile), { recursive: true })
+  fs.writeFileSync(
+    destFile,
+    `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0; url=${target}" />
+    <link rel="canonical" href="${target}" />
+    <title>Redirecting…</title>
+    <script>location.replace('${target}')</script>
+  </head>
+  <body>
+    <p>Moved — <a href="${target}">continue</a>.</p>
+  </body>
+</html>
+`,
+  )
+}
+
+function patchFileInPlace(filePath, replacements) {
+  if (!fs.existsSync(filePath)) return
+
+  let html = fs.readFileSync(filePath, 'utf8')
+  for (const [from, to] of replacements) {
+    html = html.replaceAll(from, to)
+  }
+  fs.writeFileSync(filePath, html)
+}
+
+function patchSlidesForPages(slidesDir) {
+  patchFileInPlace(path.join(slidesDir, 'index.html'), [
+    ['../../node_modules/', '../node_modules/'],
+    ['data-base="../../"', 'data-base="../"'],
+  ])
+  console.log('Patched slides/index.html paths for GitHub Pages')
+}
+
+function patchGuideForPages(filePath) {
+  patchFileInPlace(filePath, [
+    ['../node_modules/', 'node_modules/'],
+    ['data-base="../"', 'data-base="./"'],
+  ])
+}
+
+function patchHubForPages(filePath) {
+  patchFileInPlace(filePath, [['data-base="../"', 'data-base="./"']])
+}
+
+function copyPagesVendorAssets() {
+  const nodeModules = path.join(root, 'node_modules')
+  const revealSrc = path.join(nodeModules, 'reveal.js')
+  const hljsSrc = path.join(nodeModules, 'highlight.js')
+  const siteModules = path.join(siteDir, 'node_modules')
+
+  if (!fs.existsSync(revealSrc)) {
+    throw new Error('Missing reveal.js — run npm ci before pages:build')
+  }
+  if (!fs.existsSync(hljsSrc)) {
+    throw new Error('Missing highlight.js — run npm ci before pages:build')
+  }
+
+  copyDir(path.join(revealSrc, 'dist'), path.join(siteModules, 'reveal.js', 'dist'))
+  fs.mkdirSync(path.join(siteModules, 'reveal.js', 'plugin', 'highlight'), { recursive: true })
+  fs.copyFileSync(
+    path.join(revealSrc, 'plugin', 'highlight', 'highlight.js'),
+    path.join(siteModules, 'reveal.js', 'plugin', 'highlight', 'highlight.js'),
+  )
+
+  const hlStyles = path.join(siteModules, 'highlight.js', 'styles')
+  fs.mkdirSync(hlStyles, { recursive: true })
+  for (const style of ['github.css', 'github-dark.css']) {
+    fs.copyFileSync(path.join(hljsSrc, 'styles', style), path.join(hlStyles, style))
+  }
+
+  console.log('Copied reveal.js + highlight.js assets to site/node_modules/')
+}
+
 fs.rmSync(siteDir, { recursive: true, force: true })
 fs.mkdirSync(siteDir, { recursive: true })
 
 fs.copyFileSync(path.join(docsSrc, 'index.html'), path.join(siteDir, 'index.html'))
+copyDir(path.join(docsSrc, 'slides'), path.join(siteDir, 'slides'))
+patchSlidesForPages(path.join(siteDir, 'slides'))
+
+for (const guide of ['guia-completo.html', 'complete-guide.html']) {
+  const src = path.join(docsSrc, guide)
+  if (fs.existsSync(src)) {
+    const dest = path.join(siteDir, guide)
+    fs.copyFileSync(src, dest)
+    patchGuideForPages(dest)
+  }
+}
+
+patchHubForPages(path.join(siteDir, 'index.html'))
+copyPagesVendorAssets()
+
+writeLegacyRedirect(path.join(siteDir, 'docs', 'index.html'), '../')
+writeLegacyRedirect(path.join(siteDir, 'docs', 'complete-guide.html'), '../complete-guide.html')
+writeLegacyRedirect(path.join(siteDir, 'docs', 'guia-completo.html'), '../guia-completo.html')
+writeLegacyRedirect(path.join(siteDir, 'docs', 'slides', 'index.html'), '../../slides/')
 
 const reportDest = path.join(siteDir, 'report')
 if (fs.existsSync(path.join(allureStaging, 'index.html'))) {
