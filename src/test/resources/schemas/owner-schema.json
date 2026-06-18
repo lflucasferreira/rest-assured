@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Owner",
+  "type": "object",
+  "required": ["id", "firstName", "lastName", "address", "city", "telephone"],
+  "properties": {
+    "id": { "type": "integer" },
+    "firstName": { "type": "string" },
+    "lastName": { "type": "string" },
+    "address": { "type": "string" },
+    "city": { "type": "string" },
+    "telephone": { "type": "string" },
+    "pets": {
+      "type": "array",
+      "items": { "type": "object" }
+    }
+  }
+}

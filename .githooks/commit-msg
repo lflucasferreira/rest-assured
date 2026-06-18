@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source "$(dirname "$0")/lib/author-policy.sh"
+
+author_policy_check_message_file "$1"
