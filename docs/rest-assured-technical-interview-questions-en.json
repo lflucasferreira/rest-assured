@@ -1,0 +1,1818 @@
+{
+  "questions": [
+    {
+      "id": "ra-o-que-e",
+      "category": "fundamentos",
+      "likelihood": 95,
+      "audience": "technical",
+      "question": "What is Rest Assured and what type of testing was it designed for?",
+      "answer": "Rest Assured is a Java DSL library for testing HTTP/REST APIs fluently. It was designed for API integration and contract testing — validating status, headers, JSON/XML body, and response time without relying on a UI. In the rest-assured project, the suite covers the Spring Petclinic REST API with JUnit 5, typed clients, and schema validation.",
+      "keyPoints": [
+        "Java DSL: given().when().then() for HTTP requests",
+        "Focus on API/integration — does not replace UI E2E",
+        "Integrates with JUnit 5, Hamcrest, Allure, and JSON Schema",
+        "Java/Maven ecosystem — common in enterprise backends",
+        "rest-assured repo: 98 tests against the Petclinic API"
+      ],
+      "followUps": [
+        "Does Rest Assured replace unit tests?",
+        "Why Java instead of Postman for automation?"
+      ],
+      "tags": [
+        "fundamentals",
+        "rest-assured",
+        "java",
+        "api",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-api-vs-integracao-vs-e2e",
+      "category": "fundamentos",
+      "likelihood": 88,
+      "audience": "technical",
+      "question": "What is the difference between API testing, integration testing, and E2E testing?",
+      "answer": "API testing validates HTTP endpoints directly (contract, status, payload). Integration testing verifies interaction between components (e.g., API + real database). E2E simulates the full user journey via the UI. In the pyramid, API tests are fast and stable; E2E covers a few critical flows. The rest-assured project is a pure API layer — no browser.",
+      "keyPoints": [
+        "API: direct HTTP, ms–seconds, REST contract",
+        "Integration: multiple real or containerized services/modules",
+        "E2E: UI + backend, slower and more prone to flakiness",
+        "Pyramid: many API, some integration, few E2E",
+        "Petclinic: OwnersApiTest, VisitsApiTest = integration with real API"
+      ],
+      "followUps": [
+        "When is an API test enough without E2E?",
+        "How do you combine Rest Assured with Cypress/Playwright?"
+      ],
+      "tags": [
+        "fundamentals",
+        "api",
+        "integration",
+        "e2e",
+        "pyramid",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-api-sem-ui-estavel",
+      "category": "fundamentos",
+      "likelihood": 85,
+      "audience": "technical",
+      "question": "Why can testing APIs directly (without UI) be more stable?",
+      "answer": "APIs eliminate UI variables: rendering, selectors, DOM timing, animations, and browser differences. Failures point directly to contract or backend logic. Execution is faster, parallelizable, and more deterministic. In Petclinic, creating owner/pet/visit via clients is orders of magnitude faster than the equivalent UI flow.",
+      "keyPoints": [
+        "No dependency on DOM, CSS, or frontend JavaScript",
+        "Fast CI feedback — dozens of tests in minutes",
+        "Easier to diagnose failures (status + body)",
+        "Data setup via POST instead of clicks",
+        "Ideal for contract regression on every PR"
+      ],
+      "followUps": [
+        "What do API tests not cover that E2E does?",
+        "How do you ensure the UI calls the API correctly?"
+      ],
+      "tags": [
+        "fundamentals",
+        "stability",
+        "api",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-contrato-json-schema",
+      "category": "fundamentos",
+      "likelihood": 82,
+      "audience": "sdet",
+      "question": "What is an API contract and how does it relate to JSON Schema?",
+      "answer": "An API contract defines the expected request/response format: fields, types, status codes, and headers. JSON Schema is a declarative specification for validating JSON structure. Rest Assured integrates json-schema-validator to assert that responses match schemas in src/test/resources/schemas/. A breaking contract change should fail tests before reaching production.",
+      "keyPoints": [
+        "Contract: implicit/explicit agreement between consumer and producer",
+        "JSON Schema: automated structural validation",
+        "ResponseValidator.assertJsonSchema() in the project",
+        "OpenAPI is another way to document contracts",
+        "Schema for first array item vs single object"
+      ],
+      "followUps": [
+        "Contract vs functional test — what's the difference?",
+        "How do you keep schemas in sync with the API?"
+      ],
+      "tags": [
+        "fundamentals",
+        "contract",
+        "json-schema",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-rfc7807-problem-details",
+      "category": "fundamentos",
+      "likelihood": 80,
+      "audience": "sdet",
+      "question": "What is RFC 7807 Problem Details and when should you validate it?",
+      "answer": "RFC 7807 standardizes HTTP error bodies with type, title, status, detail, and instance fields. Spring Boot returns application/problem+json on validation errors. Validating ProblemDetail ensures clients receive structured errors and useful messages. In the project, ErrorResponseValidator validates 400 with expected fields; NegativeApiTest parametrizes invalid scenarios.",
+      "keyPoints": [
+        "Content-Type: application/problem+json",
+        "Fields: type, title, status, detail (and extensions)",
+        "Better than HTML or a generic string in REST APIs",
+        "ErrorResponseValidator centralizes error assertions",
+        "Parametrize invalid IDs → 404 with no body in Petclinic"
+      ],
+      "followUps": [
+        "Difference between 400 and 422 in this context?",
+        "How do you test errors with no body (empty 404)?"
+      ],
+      "tags": [
+        "fundamentals",
+        "rfc7807",
+        "error",
+        "spring",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-stack-java-maven",
+      "category": "fundamentos",
+      "likelihood": 78,
+      "audience": "technical",
+      "question": "What stack does the rest-assured project use?",
+      "answer": "Java 17, Maven, Rest Assured 5, JUnit 5, Hamcrest, Allure, Jackson, JavaFaker, WireMock, and json-schema-validator. Docker Compose starts the Petclinic API (ports 9966 without auth and 9967 with Basic Auth). GitHub Actions runs mvn test with service containers and publishes Allure to GitHub Pages.",
+      "keyPoints": [
+        "Java 17 + Maven — enterprise backend standard",
+        "Rest Assured 5.x — fluent HTTP DSL",
+        "JUnit 5: @Test, @ParameterizedTest, @Tag, Assumptions",
+        "Allure: @Epic/@Feature/@Story + AllureRestAssured filter",
+        "WireMock: simulate downstream without real dependency"
+      ],
+      "followUps": [
+        "Why Maven and not Gradle?",
+        "How does Rest Assured compare to Spring MockMvc?"
+      ],
+      "tags": [
+        "fundamentals",
+        "java",
+        "maven",
+        "stack",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-piramide-api-e2e",
+      "category": "fundamentos",
+      "likelihood": 76,
+      "audience": "technical",
+      "question": "When should you add API tests vs E2E tests in the pyramid?",
+      "answer": "API tests cover contracts, business rules, and errors at low cost — prioritize them for CRUD, validation, and security. Reserve E2E for critical journeys where UI, session, and visual integrations matter. Practical rule: if the bug would only be caught by the UI (layout, navigation), use E2E; if it is endpoint logic, use API.",
+      "keyPoints": [
+        "API: happy path + negatives + performance + contract",
+        "E2E: checkout, login, critical multi-screen flows",
+        "API as fast setup for a few E2E tests",
+        "rest-assured covers 98 Petclinic API scenarios",
+        "Avoid duplicating the same assertion in API and E2E"
+      ],
+      "followUps": [
+        "How many E2E tests are enough?",
+        "Where do component tests fit in the pyramid?"
+      ],
+      "tags": [
+        "fundamentals",
+        "pyramid",
+        "strategy",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-given-when-then",
+      "category": "dsl",
+      "likelihood": 92,
+      "audience": "technical",
+      "question": "Explain the given().when().then() syntax in Rest Assured.",
+      "answer": "given() prepares the request: base URI, headers, auth, body, and RequestSpecification. when() executes the HTTP verb (GET, POST, PUT, DELETE). then() applies inline assertions (statusCode, body, time) or returns a Response for external validation. In the project, Client classes encapsulate given/when; tests use ResponseValidator and Hamcrest in then.",
+      "keyPoints": [
+        "given: base spec, Content-Type, auth, payload",
+        "when: .get(), .post(), .put(), .delete()",
+        "then: .statusCode(), .body(), .time() or extract().response()",
+        "Clients: OwnersClient, PetsClient isolate paths",
+        "BDD-readable for QA and Java developers"
+      ],
+      "followUps": [
+        "Can I skip given() if I have a RequestSpecification?",
+        "then() vs extracting Response — when to use each?"
+      ],
+      "tags": [
+        "dsl",
+        "given-when-then",
+        "bdd",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-response-vs-then",
+      "category": "dsl",
+      "likelihood": 85,
+      "audience": "technical",
+      "question": "What is the difference between Response and chaining assertions in then()?",
+      "answer": "then() chains fluent assertions that fail the test immediately (inline BDD style). Response is the object returned by extract().response() — it lets you reuse body, headers, and status in multiple Hamcrest/JUnit assertions, deserialize POJOs, and attach to Allure. The project prefers Response + ResponseValidator for reuse and clear messages.",
+      "keyPoints": [
+        "then(): inline assertions, fast failure, less flexible",
+        "Response: multiple assertions, POJO mapping, logging",
+        "response.jsonPath().getInt(\"id\") for extraction",
+        "response.as(Owner.class) with Jackson",
+        "Validators centralize assertStatusCode, assertJsonSchema"
+      ],
+      "followUps": [
+        "How do you log the full response on failure?",
+        "Validate header and body in the same test?"
+      ],
+      "tags": [
+        "dsl",
+        "response",
+        "assertions",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-jsonpath-extracao",
+      "category": "dsl",
+      "likelihood": 83,
+      "audience": "technical",
+      "question": "How do you extract values with JsonPath without mapping to a POJO?",
+      "answer": "Use response.jsonPath().get(\"field\"), getInt(), getList(), or getString() after extract().response(). JsonPath supports dot notation and filters ($[0].name). Useful for spot assertions or chaining IDs in CREATE → GET flows. POJOs are preferred when the entire object is reused.",
+      "keyPoints": [
+        "jsonPath().getInt(\"id\") after POST for the next step",
+        "getList(\"pets\") for arrays without deserializing everything",
+        "Less boilerplate than POJO for a single field",
+        "POJO when validating the full object repeatedly",
+        "JsonPath fails clearly if the path does not exist"
+      ],
+      "followUps": [
+        "JsonPath vs response.as(Owner.class)?",
+        "How do you extract a header from the response?"
+      ],
+      "tags": [
+        "dsl",
+        "jsonpath",
+        "extraction",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-sla-response-time",
+      "category": "dsl",
+      "likelihood": 80,
+      "audience": "sdet",
+      "question": "How do you validate response time (SLA) with Rest Assured?",
+      "answer": "Use then().time(lessThan(ms)) or response.getTime() after the call. Configure api.response.time.max.ms in config/*.properties and PerformanceSmokeTest validates critical endpoints. In CI, SLAs should have margin — shared environments are slower. Assumptions can skip SLA checks if the dataset is empty.",
+      "keyPoints": [
+        "then().time(lessThan(5000L)) — Hamcrest matcher",
+        "ConfigLoader.getMaxResponseTimeMs() centralizes the limit",
+        "@Tag(\"performance\") to run subset: mvn -Dgroups=performance",
+        "Measuring p95 requires a dedicated tool (k6, JMeter)",
+        "Smoke SLA detects severe latency regressions"
+      ],
+      "followUps": [
+        "Is SLA in a functional test reliable in CI?",
+        "How do you separate performance testing from smoke SLA?"
+      ],
+      "tags": [
+        "dsl",
+        "performance",
+        "sla",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-request-specification",
+      "category": "dsl",
+      "likelihood": 88,
+      "audience": "sdet",
+      "question": "What is RequestSpecification and why reuse it?",
+      "answer": "RequestSpecification encapsulates common configuration: baseUri, Content-Type, Accept, auth, timeouts, and filters. ApiClient builds a spec in the constructor and all client methods reuse given(requestSpec). Changing environment or adding an Allure filter requires a single change.",
+      "keyPoints": [
+        "RequestSpecBuilder: setBaseUri, setContentType, addFilter",
+        "ApiClient: shared spec for OwnersClient, PetsClient, etc.",
+        "buildSecureRequestSpec() for API on port 9967",
+        "buildAuthenticatedRequestSpec() for custom credentials",
+        "DRY — avoids repeating headers in every test"
+      ],
+      "followUps": [
+        "Spec per thread in parallel tests?",
+        "How do you override a header on a single request?"
+      ],
+      "tags": [
+        "dsl",
+        "request-spec",
+        "architecture",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-headers-customizados-etag",
+      "category": "dsl",
+      "likelihood": 75,
+      "audience": "sdet",
+      "question": "How do you send custom headers (e.g., If-None-Match for ETag)?",
+      "answer": "Use given().header(\"If-None-Match\", etag) or requestSpec.header(...). ContractAndCachingTest sends If-None-Match after capturing the ETag from the initial GET; expected response is 304 Not Modified. If the API does not expose ETag (Petclinic default), Assumptions.assumeTrue() skips the test without a false failure.",
+      "keyPoints": [
+        "header(name, value) in given or on the spec",
+        "Flow: GET → extract ETag → conditional GET",
+        "304: empty body, validate status only",
+        "Assumptions when feature is optional on the API",
+        "Useful for HTTP cache and bandwidth optimization"
+      ],
+      "followUps": [
+        "How do you validate Cache-Control headers?",
+        "ETag missing — fail or skip?"
+      ],
+      "tags": [
+        "dsl",
+        "headers",
+        "etag",
+        "cache",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-hamcrest-matchers",
+      "category": "dsl",
+      "likelihood": 77,
+      "audience": "technical",
+      "question": "How does the project use Hamcrest with Rest Assured?",
+      "answer": "Hamcrest provides expressive matchers: is(), hasSize(), greaterThan(), containsString(). Rest Assured accepts Hamcrest in then().body() and JUnit assertThat() uses the same matchers on the deserialized Response. Combines readable failure messages with composite assertions.",
+      "keyPoints": [
+        "import static org.hamcrest.Matchers.*",
+        "assertThat(owners, hasSize(greaterThan(0)))",
+        "then().body(\"name\", equalTo(\"Max\"))",
+        "Composite matchers: everyItem, hasItem",
+        "Prefer matchers over assertEquals when messages matter"
+      ],
+      "followUps": [
+        "Hamcrest vs AssertJ — which to use?",
+        "Custom matcher for ProblemDetail?"
+      ],
+      "tags": [
+        "dsl",
+        "hamcrest",
+        "assertions",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-basic-auth",
+      "category": "dsl",
+      "likelihood": 84,
+      "audience": "sdet",
+      "question": "How do you configure Basic Auth in Rest Assured in this project?",
+      "answer": "ApiClient.buildRequestSpec(withAuth=true) applies auth().preemptive().basic(username, password) with credentials from ConfigLoader. The secure API runs on port 9967 with PETCLINIC_SECURITY_ENABLE=true. SecurityApiTest and SecurityAuthorizationTest validate 401 without credentials and access with admin:admin.",
+      "keyPoints": [
+        "preemptive() sends Authorization without a 401 challenge",
+        "api.auth.username/password in docker.properties",
+        "Separate SecureBaseUri: api.secure.base.uri",
+        "Docker healthcheck: wget --user=admin --password=admin",
+        "RBAC: Assumptions when provisioned user does not authenticate"
+      ],
+      "followUps": [
+        "Bearer token vs Basic Auth in Rest Assured?",
+        "How do you test 403 Forbidden vs 401?"
+      ],
+      "tags": [
+        "dsl",
+        "auth",
+        "basic-auth",
+        "security",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-client-layer",
+      "category": "padroes",
+      "likelihood": 90,
+      "audience": "sdet",
+      "question": "Why encapsulate HTTP calls in Client classes?",
+      "answer": "Clients centralize paths, verbs, serialization, and RequestSpecification. When the API changes (new prefix, required header), you update one file instead of dozens of tests. Lets you inject filters (network capture, Allure) once in ApiClient. POJO models stay aligned with the endpoints that consume them.",
+      "keyPoints": [
+        "OwnersClient, PetsClient, VisitsClient — one per resource",
+        "Abstract ApiClient: base spec + logging + Allure",
+        "Tests read like domain language: createOwner()",
+        "Easier to mock/stub the client in future unit tests",
+        "Page Object pattern adapted for APIs"
+      ],
+      "followUps": [
+        "Client per resource vs monolithic client?",
+        "How do you version API v1 vs v2 in clients?"
+      ],
+      "tags": [
+        "patterns",
+        "client",
+        "architecture",
+        "slide",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-base-test",
+      "category": "padroes",
+      "likelihood": 85,
+      "audience": "technical",
+      "question": "What should BaseTest centralize?",
+      "answer": "BaseTest instantiates shared clients, factories, validators, and cleanup hooks. Avoids duplicating @BeforeEach in every class. Can register NetworkCapture filter, IDs created for @AfterEach delete, and flow helpers (createOwnerWithPet). Concrete tests extend BaseTest and focus on the scenario.",
+      "keyPoints": [
+        "Injection of OwnersClient, PetsClient, TestDataFactory",
+        "List of created IDs for automatic cleanup",
+        "Helpers: createPet(), addVisit(), fetchOwnerWithPets()",
+        "Consistent Allure @Epic configuration per package",
+        "Do not put business assertions in BaseTest"
+      ],
+      "followUps": [
+        "BaseTest vs @BeforeEach in each class?",
+        "Inheritance vs composition for helpers?"
+      ],
+      "tags": [
+        "patterns",
+        "base-test",
+        "junit",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-pacotes-organizacao",
+      "category": "padroes",
+      "likelihood": 82,
+      "audience": "technical",
+      "question": "How do you organize clients, models, tests, and utils packages?",
+      "answer": "clients/: HTTP classes per REST resource. models/: Jackson POJOs (Owner, Pet, Visit). tests/: grouped by domain (smoke, security, advanced). utils/: ConfigLoader, factories, validators, WireMock support. base/: BaseTest. Clear separation makes navigating a 98-test suite and onboarding fast.",
+      "keyPoints": [
+        "tests/smoke — health, actuator, quick listings",
+        "tests/security — auth, RBAC, UsersApiTest",
+        "tests/advanced — WireMock, performance, OpenAPI",
+        "utils/validators — ResponseValidator, ErrorResponseValidator",
+        "resources/schemas — JSON Schema per entity"
+      ],
+      "followUps": [
+        "When to create advanced vs integration subpackage?",
+        "Where to put static fixtures?"
+      ],
+      "tags": [
+        "patterns",
+        "structure",
+        "packages",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-pojo-vs-map-vs-jsonpath",
+      "category": "padroes",
+      "likelihood": 78,
+      "audience": "sdet",
+      "question": "When to use POJO vs Map vs JsonPath?",
+      "answer": "POJO (response.as(Owner.class)): typed object, IDE autocomplete, multiple field validation. Map: dynamic or partially known payloads. JsonPath: extract one or two fields without defining a class. Negatives with irregular bodies can use Map or JsonPath; happy-path CRUD prefers POJO + schema.",
+      "keyPoints": [
+        "POJO: full CRUD, reuse across several asserts",
+        "JsonPath: chain id after POST",
+        "Map: invalid payload built ad hoc",
+        "Jackson annotations in models/ for dates and enums",
+        "Schema validates structure; POJO validates business values"
+      ],
+      "followUps": [
+        "POJO with optional fields missing?",
+        "How do you test malformed JSON without a POJO?"
+      ],
+      "tags": [
+        "patterns",
+        "pojo",
+        "jackson",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-multiplos-ambientes",
+      "category": "padroes",
+      "likelihood": 86,
+      "audience": "sdet",
+      "question": "How does the project handle multiple environments (dev, docker)?",
+      "answer": "ConfigLoader reads config/{env}.properties where env comes from -Denv=docker (default dev). System properties (-Dapi.base.uri=...) override the file. dev.properties points to localhost:9966; docker.properties uses compose hostnames. CI passes -Denv=docker and service container URIs.",
+      "keyPoints": [
+        "-Denv=docker in Maven and GitHub Actions",
+        "overrideFromSystemProperties for CI flexibility",
+        "Separate api.secure.base.uri for authenticated instance",
+        "Same suite runs locally, Docker, and CI without code changes",
+        "Never commit secrets — use env vars in CI"
+      ],
+      "followUps": [
+        "How do you add a staging environment?",
+        "Properties vs 12-factor environment variables?"
+      ],
+      "tags": [
+        "patterns",
+        "config",
+        "environments",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-junit-before-each-all",
+      "category": "padroes",
+      "likelihood": 80,
+      "audience": "technical",
+      "question": "Difference between @BeforeEach and @BeforeAll in API tests.",
+      "answer": "@BeforeEach runs before each @Test — ideal for clean state, new WireMock stub, or reset cleanup list. @BeforeAll (static method) runs once per class — load heavy OpenAPI doc, start shared container. Caution: shared state in @BeforeAll breaks isolation if tests modify data.",
+      "keyPoints": [
+        "@BeforeEach: clients, capture filter, list of created IDs",
+        "@BeforeAll: OpenApiClient.loadDocument() once",
+        "JUnit 5 @TestInstance(PER_CLASS) if @BeforeAll needs instance",
+        "API tests prefer isolation per test",
+        "@AfterEach: delete created resources"
+      ],
+      "followUps": [
+        "WireMock @BeforeEach vs @BeforeAll?",
+        "When to use @DirtiesContext?"
+      ],
+      "tags": [
+        "patterns",
+        "junit",
+        "lifecycle",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-parameterized-csv",
+      "category": "padroes",
+      "likelihood": 83,
+      "audience": "sdet",
+      "question": "How do you use @ParameterizedTest with @CsvSource?",
+      "answer": "Annotate the method with @ParameterizedTest and @CsvSource({\"0, 404\", \"-1, 404\", \"99999, 404\"}). Each row becomes an independent test in the report. NegativeApiTest uses this for invalid IDs without duplicating code. Combine with @DisplayName for Allure readability.",
+      "keyPoints": [
+        "@ParameterizedTest + @CsvSource for input matrix",
+        "One failure does not block other matrix scenarios",
+        "@NullAndEmptySource for invalid strings",
+        "@MethodSource for complex data",
+        "Allure shows each row as a separate case"
+      ],
+      "followUps": [
+        "CsvSource vs MethodSource — when?",
+        "How do you parametrize invalid credentials?"
+      ],
+      "tags": [
+        "patterns",
+        "junit",
+        "parametrization",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-displayname-allure",
+      "category": "padroes",
+      "likelihood": 77,
+      "audience": "technical",
+      "question": "What are @DisplayName and Allure annotations @Epic/@Feature/@Story for?",
+      "answer": "@DisplayName makes reports readable ('Should return 404 for unknown pet id'). @Epic groups by product/system, @Feature by functional area, @Story by user scenario. Allure generates a hierarchical dashboard — useful for stakeholders and triaging failures by module.",
+      "keyPoints": [
+        "@Epic(\"Spring Petclinic API\") at class level",
+        "@Feature(\"Owners\"), @Story(\"Create owner\") on method",
+        "DisplayName in consistent Portuguese or English",
+        "Easier to filter failures: 'everything in Security failed'",
+        "Integration with AllureRestAssured for HTTP attachments"
+      ],
+      "followUps": [
+        "Are Epic/Feature mandatory?",
+        "How do you link a test to a Jira ticket in Allure?"
+      ],
+      "tags": [
+        "patterns",
+        "allure",
+        "displayname",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-independencia-testes",
+      "category": "padroes",
+      "likelihood": 84,
+      "audience": "sdet",
+      "question": "How do you ensure independence between tests that create data?",
+      "answer": "Each test creates its own data via factory (JavaFaker) and registers IDs for cleanup in @AfterEach. Do not depend on execution order or mutable seed data. Avoid deleting pet types from seed — breaks other tests. UUID or timestamp in names prevents collisions.",
+      "keyPoints": [
+        "TestDataFactory generates unique Owner/Pet",
+        "@AfterEach deletes created owners/pets",
+        "Do not assume id=1 exists — create and use the return",
+        "JUnit runs in non-guaranteed order by default",
+        "Parallel execution requires full data isolation"
+      ],
+      "followUps": [
+        "Shared tenant vs data per test?",
+        "How do you cleanup if DELETE fails?"
+      ],
+      "tags": [
+        "patterns",
+        "isolation",
+        "data",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-assumptions",
+      "category": "padroes",
+      "likelihood": 81,
+      "audience": "sdet",
+      "question": "When to use Assumptions.assumeTrue() (e.g., ETag missing)?",
+      "answer": "Assumptions abort the test as skipped when a precondition is not met — different from failure. Use when the feature is optional on the API (ETag, actuator/info, RBAC with provisioned user). Avoids false negatives in environments that do not support the capability. Allure/JUnit report as skipped.",
+      "keyPoints": [
+        "assumeTrue(etag != null) before conditional test",
+        "SecurityAuthorizationTest: skip if provisioned login fails",
+        "ActuatorSmokeTest: skip if /actuator/info not exposed",
+        "Skipped ≠ passed — monitor excessive skips",
+        "Document in @DisplayName when assume is expected"
+      ],
+      "followUps": [
+        "assumeTrue vs @Disabled?",
+        "Does silent skip mask regression?"
+      ],
+      "tags": [
+        "patterns",
+        "assumptions",
+        "junit",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-javafaker-factory",
+      "category": "padroes",
+      "likelihood": 79,
+      "audience": "technical",
+      "question": "Why use JavaFaker instead of fixed data?",
+      "answer": "Random data reduces collisions between parallel runs and detects bugs tied to specific values (name validation, length). Fixed data is fine for deterministic business asserts. TestDataFactory centralizes faker with rules (e.g., vet names without numbers — API returns 400).",
+      "keyPoints": [
+        "JavaFaker: name(), address(), numerify()",
+        "Avoids duplicate 'John Doe' in the same suite",
+        "Domain rules in the factory, not in each test",
+        "Fixed faker seed if reproducibility is needed",
+        "Combine with cleanup to avoid polluting the database"
+      ],
+      "followUps": [
+        "Faker vs builder pattern?",
+        "Synthetic data and GDPR?"
+      ],
+      "tags": [
+        "patterns",
+        "faker",
+        "data",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-cleanup-after-each",
+      "category": "padroes",
+      "likelihood": 82,
+      "audience": "sdet",
+      "question": "How do you implement cleanup (@AfterEach) of created resources?",
+      "answer": "Keep List<Integer> createdOwnerIds in BaseTest. After each successful POST, add(id). @AfterEach iterates and calls DELETE — ignore 404 if already removed. Order matters: delete visits before pets before owners for referential integrity.",
+      "keyPoints": [
+        "Register every resource created in the test",
+        "@AfterEach always runs — even if the test failed",
+        "Try/catch on delete to avoid masking the original failure",
+        "Do not delete seed data (default pet types)",
+        "Ephemeral CI database may omit cleanup"
+      ],
+      "followUps": [
+        "Cleanup via API vs truncate DB?",
+        "Transaction rollback in integration tests?"
+      ],
+      "tags": [
+        "patterns",
+        "cleanup",
+        "teardown",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-junit-tags-groups",
+      "category": "padroes",
+      "likelihood": 86,
+      "audience": "sdet",
+      "question": "How do you use @Tag and JUnit groups to run suite subsets?",
+      "answer": "Annotate classes with @Tag(\"smoke\"), @Tag(\"security\"), @Tag(\"performance\"), @Tag(\"contract\"). Run via mvn test -Dgroups=smoke or -DexcludedGroups=performance. Useful in CI: PR runs fast smoke; nightly runs everything. pom.xml configures maven-surefire-plugin with groups/excludedGroups.",
+      "keyPoints": [
+        "@Tag(\"smoke\") on ActuatorSmokeTest, critical OwnersApiTest",
+        "@Tag(\"security\") on SecurityApiTest, UsersApiTest",
+        "mvn test -Dgroups=security,smoke",
+        "Parallelize smoke on PR — feedback in minutes",
+        "Tags aligned to business risk"
+      ],
+      "followUps": [
+        "Tag vs package for selection?",
+        "How do tags work in GitHub Actions matrix?"
+      ],
+      "tags": [
+        "patterns",
+        "junit",
+        "tags",
+        "groups",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-json-schema-validacao",
+      "category": "padroes",
+      "likelihood": 87,
+      "audience": "sdet",
+      "question": "How do you validate JSON Schema with Rest Assured in this project?",
+      "answer": "ResponseValidator loads schema from classpath (resources/schemas/owner-schema.json) and uses JsonSchemaValidator.matchesJsonSchemaInClasspath(). For arrays, validate the first element schema or a wrapper array schema. Failure indicates a breaking change in the response contract.",
+      "keyPoints": [
+        "matchesJsonSchemaInClasspath(\"schemas/owner-schema.json\")",
+        "assertJsonSchema(response, path) centralized helper",
+        "Array: extract [0] or validate each item in a loop",
+        "Keep schema aligned with OpenAPI when possible",
+        "@Tag(\"contract\") for contract suite"
+      ],
+      "followUps": [
+        "Strict schema vs additionalProperties?",
+        "Does OpenAPI generate schema automatically?"
+      ],
+      "tags": [
+        "patterns",
+        "json-schema",
+        "contract",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-schema-array-vs-objeto",
+      "category": "padroes",
+      "likelihood": 76,
+      "audience": "sdet",
+      "question": "Difference between validating schema of first array item vs single object.",
+      "answer": "GET /owners returns an array — item schema describes one owner, not the [] envelope. Validate jsonPath list[0] against owner-schema or use an array schema with items.$ref. GET /owners/{id} returns an object — apply schema directly to the body. Common mistake: applying item schema to the entire array.",
+      "keyPoints": [
+        "List<Owner>: hasSize + schema on first item",
+        "Single object: response.then().body(matchesJsonSchema...)",
+        "OpenAPI distinguishes type array vs object",
+        "Avoids false positive on empty lists",
+        "Empty list: validate hasSize(0) without item schema"
+      ],
+      "followUps": [
+        "Validate all items vs sample?",
+        "Schema performance on large lists?"
+      ],
+      "tags": [
+        "patterns",
+        "json-schema",
+        "array",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-validar-headers",
+      "category": "padroes",
+      "likelihood": 78,
+      "audience": "technical",
+      "question": "How do you validate HTTP headers beyond the JSON body?",
+      "answer": "Use response.getHeader(\"Content-Type\"), then().header(), or Hamcrest hasHeader(). ContentNegotiationTest validates Accept application/json vs text/plain. Location header after 201 Created. Cache-Control and ETag in caching tests.",
+      "keyPoints": [
+        "assertThat(response.getContentType(), containsString(\"json\"))",
+        "201: Location header points to created resource",
+        "problem+json: specific Content-Type on errors",
+        "HTTP headers are case-insensitive",
+        "Allure attachment can include headers"
+      ],
+      "followUps": [
+        "Validate CORS headers in a test?",
+        "Custom X-Request-Id header?"
+      ],
+      "tags": [
+        "patterns",
+        "headers",
+        "http",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-204-no-content",
+      "category": "padroes",
+      "likelihood": 74,
+      "audience": "technical",
+      "question": "What should you test in 204 No Content responses?",
+      "answer": "Validate status 204, empty body (asString() blank), and side effects via subsequent GET. PUT owner/visit in Petclinic returns 204 — confirm persistence with fetch. Do not apply JSON Schema to the body. Relevant headers (ETag) may still exist.",
+      "keyPoints": [
+        "assertStatusCode(204)",
+        "assertThat(body.asString(), emptyOrNullString())",
+        "GET after PUT confirms persisted change",
+        "Successful DELETE may also be 204",
+        "Do not parse JSON on 204"
+      ],
+      "followUps": [
+        "204 vs 200 with empty body?",
+        "How do you test idempotent DELETE?"
+      ],
+      "tags": [
+        "patterns",
+        "http",
+        "204",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-404-corpo-vazio",
+      "category": "padroes",
+      "likelihood": 75,
+      "audience": "technical",
+      "question": "How do you handle empty body on 404 errors?",
+      "answer": "Petclinic returns 404 with no body for non-existent resources. Validate status only — do not force ProblemDetail if the API does not return one. assertThat(response.getBody().asString(), emptyOrNullString()). Parametrize invalid IDs (0, -1, 99999) with the same expected behavior.",
+      "keyPoints": [
+        "Not every API returns JSON on 404",
+        "Read contract/OpenAPI before asserting body",
+        "ErrorResponseValidator only when Content-Type is problem+json",
+        "Consistency: all endpoints return the same 404",
+        "Avoids false negative by assuming RFC 7807 always"
+      ],
+      "followUps": [
+        "404 vs 410 Gone?",
+        "Test error message when body exists?"
+      ],
+      "tags": [
+        "patterns",
+        "404",
+        "error",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-payloads-invalidos",
+      "category": "padroes",
+      "likelihood": 80,
+      "audience": "sdet",
+      "question": "How do you model invalid payloads for negative tests?",
+      "answer": "Create builders/factory methods: ownerWithoutName(), petWithInvalidType(). Or Map<String,Object> with a field omitted. Send via client and expect 400 with ProblemDetail. NegativeApiTest and validation tests cover boundaries: empty string, non-existent id, wrong type.",
+      "keyPoints": [
+        "Semantic factory methods: invalidOwnerBlankName()",
+        "Map to mutate one field without a full builder",
+        "CsvSource for multiple validation violations",
+        "Assert detail/title of ProblemDetail",
+        "Separate negative from authorization (401/403)"
+      ],
+      "followUps": [
+        "How many negatives per endpoint?",
+        "Property-based testing for payloads?"
+      ],
+      "tags": [
+        "patterns",
+        "negative",
+        "validation",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-error-vs-response-validator",
+      "category": "padroes",
+      "likelihood": 77,
+      "audience": "sdet",
+      "question": "What is the difference between ErrorResponseValidator and ResponseValidator?",
+      "answer": "ResponseValidator: happy path — 2xx status, schema, business fields, time. ErrorResponseValidator: errors — 4xx/5xx status, ProblemDetail, required error fields. Separation avoids ambiguous matchers and makes intent clear in the test.",
+      "keyPoints": [
+        "ResponseValidator.assertJsonSchema for success",
+        "ErrorResponseValidator.assertProblemDetail(status, title)",
+        "Single Responsibility — easy maintenance",
+        "Reuse across all NegativeApiTest",
+        "Specific failure messages per type"
+      ],
+      "followUps": [
+        "Would a single validator be an anti-pattern?",
+        "Validate leaked stack trace on 500?"
+      ],
+      "tags": [
+        "patterns",
+        "validators",
+        "error",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-openapi-contrato",
+      "category": "padroes",
+      "likelihood": 83,
+      "audience": "sdet",
+      "question": "How does the project validate contract via OpenAPI per operation?",
+      "answer": "OpenApiClient loads /v3/api-docs. OpenApiResponseValidator.assertResponseMatchesDocumentedOperation compares status, content-type, and documented schema for path+method. OpenApiOperationContractTest is marked @Tag(\"contract\"). Detects drift between implementation and published spec.",
+      "keyPoints": [
+        "GET /v3/api-docs once in @BeforeAll",
+        "Validates real response against operation spec",
+        "Complements static JSON Schema in resources/",
+        "Fails if endpoint is not documented",
+        "assumeTrue if optional operation is missing"
+      ],
+      "followUps": [
+        "OpenAPI vs manual JSON Schema?",
+        "Contract test as CI deploy gate?"
+      ],
+      "tags": [
+        "patterns",
+        "openapi",
+        "contract",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-dual-api-segura",
+      "category": "padroes",
+      "likelihood": 85,
+      "audience": "sdet",
+      "question": "How does the project test public and secure APIs in parallel?",
+      "answer": "docker-compose.yml starts petclinic-api (9966) and petclinic-api-secure (9967, PETCLINIC_SECURITY_ENABLE=true). ConfigLoader exposes getBaseUri() and getSecureBaseUri(). Security tests use buildSecureRequestSpec(). CI starts two service containers with distinct healthchecks.",
+      "keyPoints": [
+        "9966: no auth — main functional suite",
+        "9967: Basic Auth admin:admin — SecurityApiTest",
+        "Same Maven suite, different URIs via properties",
+        "Secure healthcheck needs credentials in wget",
+        "Dual-instance pattern for RBAC without mock"
+      ],
+      "followUps": [
+        "One container with toggle vs two?",
+        "How do you test OAuth2 instead of Basic?"
+      ],
+      "tags": [
+        "patterns",
+        "security",
+        "docker",
+        "dual-api",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-wiremock-proposito",
+      "category": "rede",
+      "likelihood": 88,
+      "audience": "sdet",
+      "question": "What is WireMock for in API testing?",
+      "answer": "WireMock simulates external HTTP services (webhooks, partners, HTTP queues) without a real dependency. Lets you stub responses, verify outbound payloads, and inject failures (503, timeout). AuditNotificationClient points to WireMock in WireMockNotificationTest and WireMockRetryIntegrationTest.",
+      "keyPoints": [
+        "Stub: define response for expected URL",
+        "Verify: assert client called with correct body",
+        "Fault injection: 503, delay, connection reset",
+        "Runs in JUnit process — no extra infra",
+        "Isolates test from main Petclinic API"
+      ],
+      "followUps": [
+        "WireMock vs MockServer vs Testcontainers?",
+        "Stub in CI vs shared environment?"
+      ],
+      "tags": [
+        "network",
+        "wiremock",
+        "mock",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-stub-mock-spy",
+      "category": "rede",
+      "likelihood": 72,
+      "audience": "technical",
+      "question": "Difference between stub, mock, and spy in the WireMock context?",
+      "answer": "Stub: defines a fake response for matching request — WireMock stubFor(post(...)). Mock (strict): verifies expected interactions — WireMock.verify(postRequestedFor). Spy: partially delegates to real — less common in API tests; WireMock is primarily stub+verify. In HTTP client tests, stub simulates downstream and verify validates the notification was sent.",
+      "keyPoints": [
+        "Stub responds; mock verifies behavior",
+        "verify(exactly(2), ...) — retry called twice",
+        "equalToJson on expected body",
+        "Do not confuse with Mockito @Mock (unit)",
+        "Outbound call contract is testable"
+      ],
+      "followUps": [
+        "When is verify too brittle?",
+        "Record/replay vs manual stub?"
+      ],
+      "tags": [
+        "network",
+        "wiremock",
+        "stub",
+        "mock",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-equaltojson",
+      "category": "rede",
+      "likelihood": 78,
+      "audience": "sdet",
+      "question": "How do you verify exact JSON payload with equalToJson?",
+      "answer": "WireMock.verify(postRequestedFor(urlEqualTo(\"/audit/owner-created\")).withRequestBody(equalToJson(expectedJson))). equalToJson ignores whitespace and allows placeholders. Ensures the event sent to the webhook contains ownerId, timestamp, and required fields.",
+      "keyPoints": [
+        "equalToJson(string) — compares JSON structure",
+        "matchingJsonPath for partial assertions",
+        "verify after action that triggers outbound call",
+        "Clear failure: expected vs actual in WireMock log",
+        "Useful for audit trail and integrations"
+      ],
+      "followUps": [
+        "equalToJson vs ignoring fields?",
+        "Test headers on outbound request?"
+      ],
+      "tags": [
+        "network",
+        "wiremock",
+        "verify",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-simular-503",
+      "category": "rede",
+      "likelihood": 80,
+      "audience": "sdet",
+      "question": "How do you simulate downstream failure (503) without affecting the main API?",
+      "answer": "Start WireMock on a local port, stubFor post audit URL returning status 503. Configure AuditNotificationClient with WireMock baseUri. Test that client code handles 503 — assert status and body 'service unavailable'. Real Petclinic API is unaffected.",
+      "keyPoints": [
+        "aResponse().withStatus(503).withBody(\"service unavailable\")",
+        "HTTP client points to localhost:wiremockPort",
+        "Tests notifier resilience, not Petclinic",
+        "WireMockResilienceTest / WireMockNotificationTest",
+        "Combine with retry: verify exactly(2) calls"
+      ],
+      "followUps": [
+        "Test circuit breaker with WireMock?",
+        "Timeout vs 503 — difference in the test?"
+      ],
+      "tags": [
+        "network",
+        "wiremock",
+        "resilience",
+        "503",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-wiremock-retry",
+      "category": "rede",
+      "likelihood": 79,
+      "audience": "sdet",
+      "question": "How do you test integration retry with WireMock?",
+      "answer": "Configure a stub that fails on the 1st call (fault) and succeeds on the 2nd, or use scenario state. WireMockRetryIntegrationTest verifies exactly(2) postRequests — client retried after failure. Validates retry policy without depending on an unstable real service.",
+      "keyPoints": [
+        "WireMock scenarios: whenScenarioStateIs",
+        "verify(exactly(2), postRequestedFor(...))",
+        "Simulates transient 503 or timeout",
+        "Important for webhooks and payment gateways",
+        "Document expected backoff if testable"
+      ],
+      "followUps": [
+        "Idempotent retry — how to test?",
+        "Exponential backoff in a test?"
+      ],
+      "tags": [
+        "network",
+        "wiremock",
+        "retry",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-filter-captura",
+      "category": "rede",
+      "likelihood": 81,
+      "audience": "sdet",
+      "question": "How does a Rest Assured Filter capture request/response?",
+      "answer": "Implement Filter with FilterContext — in filter(), read requestSpec and response, store in a thread-local list, call ctx.next(). NetworkCaptureFilter records method, URI, headers, and body. NetworkInspector asserts sequence and content after a multi-step flow.",
+      "keyPoints": [
+        "Filter interface: filter(RequestSpecification, Response, FilterContext)",
+        "ctx.next(spec, responseSpec) continues the chain",
+        "Thread-local or list per test",
+        "Attach to Allure via attachment",
+        "AllureRestAssured already does this — custom for asserts"
+      ],
+      "followUps": [
+        "Filter vs RestAssured filter order?",
+        "Capture only on failure?"
+      ],
+      "tags": [
+        "network",
+        "filter",
+        "network-capture",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-allure-http-anexo",
+      "category": "rede",
+      "likelihood": 77,
+      "audience": "technical",
+      "question": "How do you attach HTTP exchange to the Allure report?",
+      "answer": "Add AllureRestAssured filter to RequestSpecification — automatically records request/response per step. Complement with @Attachment on a custom method for formatted JSON. Configured in ApiClient when logging.enabled=true.",
+      "keyPoints": [
+        "new AllureRestAssured() in RequestSpecBuilder",
+        "Each HTTP call becomes a step in the report",
+        "Useful for debugging failures without local repro",
+        "CI publishes Allure to GitHub Pages",
+        "Sanitize Authorization header in attachments"
+      ],
+      "followUps": [
+        "Allure in local test vs CI?",
+        "Attachment size with large body?"
+      ],
+      "tags": [
+        "network",
+        "allure",
+        "attachment",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-sequencia-chamadas",
+      "category": "rede",
+      "likelihood": 76,
+      "audience": "sdet",
+      "question": "How do you validate call sequence in multi-step flows?",
+      "answer": "NetworkCaptureFilter accumulates requests in order. After createOwner → createPet → addVisit, assertLastRequestMethod(POST), assertRequestCount(3), assertPathContains sequentially. Alternative: validate final state via GET without inspecting network — prefer state when possible.",
+      "keyPoints": [
+        "Inspect network when external side effect (webhook)",
+        "Final state via GET is more stable than HTTP order",
+        "NetworkInspector helpers in the project",
+        "WireMock verify for outbound sequence",
+        "Avoid coupling to internal order if not contractual"
+      ],
+      "followUps": [
+        "Distributed saga — how to assert?",
+        "Idempotency-Key in sequence?"
+      ],
+      "tags": [
+        "network",
+        "flow",
+        "network-capture",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-allure-local",
+      "category": "ci-cd",
+      "likelihood": 84,
+      "audience": "technical",
+      "question": "How do you generate and serve the Allure report locally?",
+      "answer": "Run mvn test (generates target/allure-results). Then mvn allure:serve or npm run report:allure to open interactive HTML. allure.properties defines allure.results.directory. HTTP screenshots come from the AllureRestAssured filter.",
+      "keyPoints": [
+        "mvn clean test && mvn allure:serve",
+        "npm run report:allure — Node script in package.json",
+        "target/allure-results — JSON per test",
+        "Trend history if configured",
+        "Share allure-report zip for bugs"
+      ],
+      "followUps": [
+        "Allure 2 vs 3 difference?",
+        "Integrate Allure with IntelliJ?"
+      ],
+      "tags": [
+        "ci-cd",
+        "allure",
+        "report",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-allure-github-pages",
+      "category": "ci-cd",
+      "likelihood": 82,
+      "audience": "technical",
+      "question": "How does CI publish Allure to GitHub Pages?",
+      "answer": "Workflow api-tests.yml: test job uploads allure-results-api artifact; publish-allure job downloads, merges (merge-allure-results.mjs), generates site, and deploys Pages. Hub docs/index.html links to /report/. Pattern mirrored from testflow-playwright.",
+      "keyPoints": [
+        "Three jobs: test, publish-pages, publish-allure",
+        "Artifact upload/download between jobs",
+        "npm run pages:build assembles hub + report",
+        "Public URL for stakeholders to see evidence",
+        "Merge results if multiple matrix jobs"
+      ],
+      "followUps": [
+        "How long to retain artifacts?",
+        "Public Allure — data risks?"
+      ],
+      "tags": [
+        "ci-cd",
+        "allure",
+        "github-pages",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-github-actions-service",
+      "category": "ci-cd",
+      "likelihood": 86,
+      "audience": "sdet",
+      "question": "How does GitHub Actions start the Petclinic API as a service container?",
+      "answer": "services: in the workflow defines image springcommunity/spring-petclinic-rest, ports 9966:9966, env vars, and options --health-cmd curl/wget. Test job depends on healthy service before mvn test. Second secure instance on 9967 with credentials in healthcheck.",
+      "keyPoints": [
+        "services.petclinic-api.image + ports mapping",
+        "health-cmd ensures API is ready — avoids flake",
+        "env: -Dapi.base.uri=http://localhost:9966/petclinic/api",
+        "Two services for full security suite",
+        "Alternative: docker compose step"
+      ],
+      "followUps": [
+        "Service container vs Testcontainers?",
+        "Matrix Java 17 and 21?"
+      ],
+      "tags": [
+        "ci-cd",
+        "github-actions",
+        "docker",
+        "slide"
+      ]
+    },
+    {
+      "id": "ra-healthcheck-antes-test",
+      "category": "ci-cd",
+      "likelihood": 83,
+      "audience": "sdet",
+      "question": "Why run a health check before mvn test?",
+      "answer": "API in a container takes 60–90s to start. Without healthcheck, first tests fail with Connection refused — false flake. GitHub Actions services with health-cmd or curl loop in a step until 200 on /petclinic/api/pettypes.",
+      "keyPoints": [
+        "Spring Boot startup is not instant",
+        "False negative costs CI re-run time",
+        "health-cmd in compose and workflow",
+        "Generous timeout in shared environment",
+        "Log container if health never passes"
+      ],
+      "followUps": [
+        "How much wait is enough?",
+        "Readiness vs liveness for tests?"
+      ],
+      "tags": [
+        "ci-cd",
+        "healthcheck",
+        "ci",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-docker-vs-maven-local",
+      "category": "ci-cd",
+      "likelihood": 78,
+      "audience": "technical",
+      "question": "Difference between docker compose up and local Maven against a local API?",
+      "answer": "docker compose starts Petclinic + dependencies isolated — reproduces CI, docker.properties with service hostnames. Local Maven with dev.properties assumes API already running on localhost:9966 (IDE or manual container). -Denv=docker unifies when testing against compose.",
+      "keyPoints": [
+        "compose: deterministic, easy onboarding",
+        "local: faster iteration if API is already up",
+        "docker.properties: petclinic-api hostname",
+        "dev.properties: localhost",
+        "Same code, different configs"
+      ],
+      "followUps": [
+        "Testcontainers for Petclinic?",
+        "Volume for data between runs?"
+      ],
+      "tags": [
+        "ci-cd",
+        "docker",
+        "local",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-maven-system-properties",
+      "category": "ci-cd",
+      "likelihood": 80,
+      "audience": "technical",
+      "question": "How do you pass api.base.uri via -D in Maven?",
+      "answer": "mvn test -Denv=docker -Dapi.base.uri=http://localhost:9966/petclinic/api. ConfigLoader.overrideFromSystemProperties applies override after loading the file. Useful in CI without editing committed properties.",
+      "keyPoints": [
+        "-Denv=docker selects docker.properties",
+        "-Dapi.base.uri= point override",
+        "-Dgroups=smoke for JUnit tags",
+        "surefire propagates system properties",
+        "Secrets via CI env, not -D in logs"
+      ],
+      "followUps": [
+        "MAVEN_OPTS vs -D?",
+        "Properties file per branch?"
+      ],
+      "tags": [
+        "ci-cd",
+        "maven",
+        "config",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-flaky-500",
+      "category": "estabilidade",
+      "likelihood": 85,
+      "audience": "sdet",
+      "question": "A flaky test intermittently returns 500 — how do you investigate?",
+      "answer": "Correlate with API logs, CI timing, and shared data. Run the test in isolation 10x (mvn -Dtest=Class#method). Check race conditions, connection pool, execution order, and seed dependency. NetworkCapture and Allure show the exact request on failure. Assumptions do not mask 500 — fix the cause.",
+      "keyPoints": [
+        "Reproduce locally with same env and load",
+        "Check if parallel causes data collision",
+        "500 may be a real intermittent backend bug",
+        "Quarantine @Tag until root cause",
+        "Add retry only after understanding cause"
+      ],
+      "followUps": [
+        "Is JUnit retry a good practice?",
+        "How do you detect flake in CI history?"
+      ],
+      "tags": [
+        "stability",
+        "flaky",
+        "debug",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-integridade-referencial",
+      "category": "estabilidade",
+      "likelihood": 77,
+      "audience": "sdet",
+      "question": "How do you test referential integrity in the API?",
+      "answer": "Try deleting an owner with pets — expect 400/409. Create a visit for a non-existent pet — 404. ReferentialIntegrityTest validates the API does not leave orphans or broken references. Create/delete order mirrors business rules.",
+      "keyPoints": [
+        "DELETE owner with pets → error",
+        "POST visit invalid petId → 404",
+        "Documented cascade delete vs rejected",
+        "FK constraints reflected in the API",
+        "Cleanup respects reverse order"
+      ],
+      "followUps": [
+        "Soft delete and integrity?",
+        "Test in DB vs API only?"
+      ],
+      "tags": [
+        "stability",
+        "integrity",
+        "negative",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-concorrencia",
+      "category": "estabilidade",
+      "likelihood": 74,
+      "audience": "sdet",
+      "question": "How do you approach concurrency tests with Rest Assured?",
+      "answer": "ConcurrencyApiTest fires multiple parallel requests (ExecutorService) on the same resource and validates no corruption — consistent status, no 500. Caution in shared CI; may be @Tag(\"performance\") or excluded from PR.",
+      "keyPoints": [
+        "Java ExecutorService + CountDownLatch",
+        "Create unique owner, parallel updates",
+        "Assert: no 500, coherent final state",
+        "May flake in slow environment — threshold",
+        "Different from load test (k6)"
+      ],
+      "followUps": [
+        "Parallelize JUnit tests with data?",
+        "Optimistic locking 409?"
+      ],
+      "tags": [
+        "stability",
+        "concurrency",
+        "parallel",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-content-negotiation",
+      "category": "estabilidade",
+      "likelihood": 73,
+      "audience": "technical",
+      "question": "How do you test content negotiation (JSON vs XML)?",
+      "answer": "ContentNegotiationTest sends Accept: application/json and application/xml (if supported). Validates response Content-Type. Petclinic is JSON-first — XML may return 406. Documents real behavior vs ideal spec.",
+      "keyPoints": [
+        "Accept header controls response format",
+        "406 Not Acceptable if type not supported",
+        "Rest Assured accept(ContentType.JSON)",
+        "Avoids regression if XML is removed",
+        "Derive consumes/produces from OpenAPI"
+      ],
+      "followUps": [
+        "Test UTF-8 charset?",
+        "application/problem+json on errors?"
+      ],
+      "tags": [
+        "stability",
+        "content-type",
+        "http",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-actuator-smoke",
+      "category": "estabilidade",
+      "likelihood": 76,
+      "audience": "technical",
+      "question": "How do you test Actuator without failing when the endpoint does not exist?",
+      "answer": "ActuatorSmokeTest calls /actuator/health (expected UP) and /actuator/info with Assumptions if not exposed in the Docker image. @Tag(\"smoke\") — quick liveness gate. Separates 'business API up' from 'monitoring configured'.",
+      "keyPoints": [
+        "/actuator/health — liveness for orchestrator",
+        "info may not be enabled — skip ok",
+        "ActuatorClient encapsulates paths",
+        "Do not confuse with business test",
+        "CI healthcheck uses lightweight endpoint"
+      ],
+      "followUps": [
+        "Actuator in production — security?",
+        "Custom health indicators?"
+      ],
+      "tags": [
+        "stability",
+        "actuator",
+        "smoke",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-mudanca-contrato-erro",
+      "category": "estabilidade",
+      "likelihood": 80,
+      "audience": "sdet",
+      "question": "The API changed the error contract — how do you update the suite with minimal impact?",
+      "answer": "Centralize in ErrorResponseValidator and schemas in resources/schemas/. A ProblemDetail change updates one validator and schemas — individual tests stay intact. Run contract tag first. Version API (v2) with separate OwnersV2Client.",
+      "keyPoints": [
+        "DRY validators — single change point",
+        "OpenAPI diff in PR alerts breakage",
+        "Contract tag for fast feedback",
+        "v1/v2 clients coexist temporarily",
+        "Coordinate with API team before merge"
+      ],
+      "followUps": [
+        "Deprecation policy in tests?",
+        "Consumer-driven contracts?"
+      ],
+      "tags": [
+        "stability",
+        "contract",
+        "maintenance",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-negativos-404-param",
+      "category": "cenarios",
+      "likelihood": 84,
+      "audience": "sdet",
+      "question": "How do you parametrize invalid IDs (404) without duplicating tests?",
+      "answer": "@ParameterizedTest @CsvSource({\"0\", \"-1\", \"99999\"}) void getPetByInvalidId(int id). One method, multiple cases in the report. Complement with boundary: Integer.MAX_VALUE. Keep empty body assert if applicable.",
+      "keyPoints": [
+        "CsvSource for invalid ints and strings",
+        "DisplayName with {0} placeholder",
+        "Same expected behavior for all",
+        "Separate 404 from 400 (format validation)",
+        "NegativeApiTest in the project"
+      ],
+      "followUps": [
+        "Invalid UUID vs not found?",
+        "404 on nested resource /owners/1/pets/99?"
+      ],
+      "tags": [
+        "scenarios",
+        "negative",
+        "404",
+        "parametrization",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-problemdetail-400",
+      "category": "cenarios",
+      "likelihood": 82,
+      "audience": "sdet",
+      "question": "How do you validate a 400 error with ProblemDetail?",
+      "answer": "POST invalid payload, assert status 400, Content-Type problem+json, title and detail fields present. ErrorResponseValidator.assertProblemDetail(response, 400) encapsulates. Verify useful client message (not stack trace).",
+      "keyPoints": [
+        "Malformed body vs validation violation",
+        "detail mentions field (e.g., name required)",
+        "status in body matches HTTP status",
+        "Custom extensions if documented",
+        "Regression if message changes — exact match vs contains"
+      ],
+      "followUps": [
+        "Validate violations[] Bean Validation?",
+        "400 vs 422 semantically?"
+      ],
+      "tags": [
+        "scenarios",
+        "400",
+        "problemdetail",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-security-rbac",
+      "category": "cenarios",
+      "likelihood": 83,
+      "audience": "sdet",
+      "question": "How do you test RBAC and authorization on the secure API?",
+      "answer": "SecurityAuthorizationTest provisions a user via POST /users (if supported) and tests access with credentials. Assumptions when Docker image does not authenticate provisioned user. Validate 401 without auth, 403 for insufficient role, 200 for admin. Role × endpoint matrix.",
+      "keyPoints": [
+        "Basic Auth admin:admin for setup",
+        "POST /users → 201 without id in body",
+        "Known limitation: provisioned user may not log in",
+        "Assumptions document expected skip",
+        "Do not hardcode passwords — use config"
+      ],
+      "followUps": [
+        "JWT roles vs Basic Auth?",
+        "Test OAuth2 scope?"
+      ],
+      "tags": [
+        "scenarios",
+        "security",
+        "rbac",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-visits-crud-fluxo",
+      "category": "cenarios",
+      "likelihood": 78,
+      "audience": "technical",
+      "question": "How do you structure a CRUD test for visits nested under owner/pet?",
+      "answer": "Flow: createOwner → createPet → POST /owners/{id}/pets/{petId}/visits → GET confirms visit → PUT update → DELETE. VisitsApiTest uses nested clients. Validates 204 on PUT and persistence via GET owner with pets and visits.",
+      "keyPoints": [
+        "Nested resource reflects Petclinic REST design",
+        "Parent IDs required at each step",
+        "Visit date in ISO format",
+        "Cleanup removes owner (cascade or manual)",
+        "Happy path before nested negatives"
+      ],
+      "followUps": [
+        "Shallow vs deep nesting?",
+        "Paginate visit list?"
+      ],
+      "tags": [
+        "scenarios",
+        "crud",
+        "visits",
+        "flow",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-api-v2-paginacao",
+      "category": "cenarios",
+      "likelihood": 75,
+      "audience": "sdet",
+      "question": "How do you test API v2 with pagination?",
+      "answer": "OwnersV2Client calls /api/v2/owners with page and size. Assert paginated structure (content[], totalElements). Validate first page, empty page, and size boundary. Different from v1 full list — separate clients avoid mixing.",
+      "keyPoints": [
+        "Query params: page, size, sort",
+        "Page wrapper schema differs from array",
+        "totalElements >= content.length",
+        "Partial last page",
+        "v1 and v2 compatibility in parallel"
+      ],
+      "followUps": [
+        "Cursor vs offset pagination?",
+        "Default page size documented?"
+      ],
+      "tags": [
+        "scenarios",
+        "pagination",
+        "v2",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-vs-postman-newman",
+      "category": "cenarios",
+      "likelihood": 70,
+      "audience": "technical",
+      "question": "Rest Assured vs Postman/Newman — pros and cons.",
+      "answer": "Postman: low learning curve, UI, shareable collections, Newman in CI. Rest Assured: type-safe, IDE refactor, JUnit/Maven integration, schemas in code, better for large suites versioned with the app. Postman good for exploration; Rest Assured for automated regression in a Java pipeline.",
+      "keyPoints": [
+        "Postman: manual + fast collaboration",
+        "RA: code review, DRY, native Maven CI",
+        "Postman secrets in vault; RA in env vars",
+        "Karate/REST Assured for Java developers",
+        "Converting Postman collection → RA is laborious"
+      ],
+      "followUps": [
+        "Postman contract testing?",
+        "When to keep both?"
+      ],
+      "tags": [
+        "scenarios",
+        "comparison",
+        "postman",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-vs-playwright-request",
+      "category": "cenarios",
+      "likelihood": 72,
+      "audience": "technical",
+      "question": "Rest Assured vs Playwright request fixture.",
+      "answer": "Playwright request is an HTTP client in the TS/JS ecosystem — same repo as UI E2E. Rest Assured is Java-native with Hamcrest and enterprise backend integration. Playwright request good for full-stack JS; Rest Assured for Java/Spring microservices and teams already using JUnit.",
+      "keyPoints": [
+        "Playwright: request.get(), same E2E config",
+        "RA: better in pure Java/Maven projects",
+        "Playwright API + UI in same test possible",
+        "RA: WireMock, Allure Java more mature",
+        "Choice follows team stack"
+      ],
+      "followUps": [
+        "Migrate from RA to Playwright API?",
+        "Comparative performance?"
+      ],
+      "tags": [
+        "scenarios",
+        "comparison",
+        "playwright",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-vs-karate",
+      "category": "cenarios",
+      "likelihood": 68,
+      "audience": "technical",
+      "question": "Rest Assured vs Karate DSL.",
+      "answer": "Karate uses Gherkin-like .feature with embedded JSON — accessible for QA with less Java. Rest Assured is pure Java — more control, IDE refactor, types. Karate integrates UI and API in one feature; RA excels with Spring/JUnit and complex setup code.",
+      "keyPoints": [
+        "Karate: BDD, readable for stakeholders",
+        "RA: type safety, JVM debugging",
+        "Karate built-in JSON validations",
+        "RA: Maven Java enterprise ecosystem",
+        "Hybrid possible but rare"
+      ],
+      "followUps": [
+        "Karate parallel performance?",
+        "Cucumber + RA alternative?"
+      ],
+      "tags": [
+        "scenarios",
+        "comparison",
+        "karate",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-credenciais-config",
+      "category": "cenarios",
+      "likelihood": 80,
+      "audience": "sdet",
+      "question": "How do you avoid committing credentials in config/*.properties?",
+      "answer": "Non-prod defaults in docker.properties (admin:admin ok for Petclinic demo). Production/staging: placeholders + override via CI secrets (GitHub Secrets → env → -D). Never commit real tokens. .gitignore for local.override.properties. Sanitize Allure attachments.",
+      "keyPoints": [
+        "Secrets in CI, not in repo",
+        "local.properties gitignored for dev",
+        "ConfigLoader reads System.getenv if extended",
+        "Scan repo with gitleaks/trufflehog",
+        "Rotate if secret leaked in log"
+      ],
+      "followUps": [
+        "Vault vs GitHub Secrets?",
+        "Credentials in third-party tests?"
+      ],
+      "tags": [
+        "scenarios",
+        "security",
+        "secrets",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-sem-dados-producao",
+      "category": "cenarios",
+      "likelihood": 78,
+      "audience": "sdet",
+      "question": "Why not use production data in automated tests?",
+      "answer": "GDPR/PCI risk, instability (data changes), side effects (real emails, charges), and inability to DELETE. Use factories, anonymized fixtures, or a dedicated environment with controlled seed. Petclinic Docker is isolated with HSQLDB.",
+      "keyPoints": [
+        "PII in log/Allure if using prod",
+        "Test may modify/delete real data",
+        "Compliance blocks in enterprise",
+        "Synthetic data with JavaFaker",
+        "Refresh test environment periodically"
+      ],
+      "followUps": [
+        "Mask prod for readonly test?",
+        "Synthetic data generators?"
+      ],
+      "tags": [
+        "scenarios",
+        "security",
+        "data",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-sanitizar-allure",
+      "category": "cenarios",
+      "likelihood": 76,
+      "audience": "sdet",
+      "question": "How do you sanitize logs and Allure attachments?",
+      "answer": "Custom Filter that redacts Authorization, Cookie, api-key before attachment. Do not log body with password/PII. AllureRestAssured can be wrapped. Review artifacts before publishing public Pages. Limited retention policy.",
+      "keyPoints": [
+        "Redact sensitive headers in filter",
+        "Mask PII in factories (faker without real SSN)",
+        "Public GitHub Pages report — extra caution",
+        "Attachment only on failure reduces exposure",
+        "GDPR: right to erasure in test data"
+      ],
+      "followUps": [
+        "Allure in private repo enough?",
+        "Token in query string — how to handle?"
+      ],
+      "tags": [
+        "scenarios",
+        "security",
+        "allure",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-novo-microservico",
+      "category": "cenarios",
+      "likelihood": 88,
+      "audience": "sdet",
+      "question": "Describe how you would structure API tests for a new microservice.",
+      "answer": "Start with smoke (health, OpenAPI), contract (schema/OpenAPI), happy-path CRUD, negatives (400/404/401), downstream integration (WireMock), security, and performance smoke. Package structure clients/models/tests. CI with service container or Testcontainers. Smoke tags on PR.",
+      "keyPoints": [
+        "Phase 1: health + create/read main entity",
+        "Phase 2: negatives + auth + schema",
+        "Phase 3: integrations and resilience",
+        "Config per environment from day 1",
+        "Mirror rest-assured Petclinic as template"
+      ],
+      "followUps": [
+        "How many tests before first deploy?",
+        "Who owns contract — consumer or provider?"
+      ],
+      "tags": [
+        "scenarios",
+        "strategy",
+        "microservice",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-priorizar-cobertura",
+      "category": "cenarios",
+      "likelihood": 85,
+      "audience": "sdet",
+      "question": "How would you prioritize coverage between happy path, negative, and flows?",
+      "answer": "Risk-based: happy path of critical endpoints first (smoke). Negatives on validation, auth, and limits that already caused bugs. Multi-step API E2E flows for revenue-critical journeys. Matrix: impact × probability. 80% value in 20% of endpoints — not 100% combinatorial.",
+      "keyPoints": [
+        "Smoke: 5–10 tests CI gate",
+        "Negatives: parametrized per required field",
+        "Security: auth matrix before release",
+        "Performance: only after functional is stable",
+        "Review coverage after production incidents"
+      ],
+      "followUps": [
+        "Is line coverage % useful?",
+        "Test debt — how to prioritize?"
+      ],
+      "tags": [
+        "scenarios",
+        "strategy",
+        "prioritization",
+        "extra"
+      ]
+    },
+    {
+      "id": "ra-users-api-provision",
+      "category": "cenarios",
+      "likelihood": 74,
+      "audience": "sdet",
+      "question": "How do you test user provisioning via POST /users?",
+      "answer": "UsersApiTest POST /users with valid payload → 201, body without id (server-generated). Subsequent GET or login to validate. Assumptions if feature is partial in Docker image. Do not delete admin seed. Documents limitation if Basic Auth does not work for created user.",
+      "keyPoints": [
+        "201 Created — Location header if available",
+        "Password not returned in GET",
+        "Roles/authorities if model supports",
+        "Cleanup created user if API allows DELETE",
+        "Security tag for dedicated subset"
+      ],
+      "followUps": [
+        "Idempotency on create user?",
+        "Test password policy?"
+      ],
+      "tags": [
+        "scenarios",
+        "users",
+        "security",
+        "project"
+      ]
+    },
+    {
+      "id": "ra-vets-specialties-write",
+      "category": "cenarios",
+      "likelihood": 72,
+      "audience": "technical",
+      "question": "What care is needed when testing writes on Vets and Specialties?",
+      "answer": "VetsApiTest and SpecialtiesApiTest: name validation (numbers in name → 400 in Petclinic). Do not delete specialties in use. Vet-specialty many-to-many relationship. Factory generates valid alphabetic names.",
+      "keyPoints": [
+        "Domain-specific validation rules",
+        "400 ProblemDetail with clear message",
+        "Seed data vs data created in test",
+        "Duplicate POST idempotency",
+        "GET list after POST confirms persistence"
+      ],
+      "followUps": [
+        "Bulk create vets?",
+        "Conflict 409 duplicate specialty?"
+      ],
+      "tags": [
+        "scenarios",
+        "vets",
+        "specialties",
+        "project"
+      ]
+    }
+  ]
+}

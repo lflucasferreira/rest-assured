@@ -2,7 +2,8 @@
 
 > Banco de perguntas para entrevistas com recrutadores técnicos, QA leads, SDETs e engenheiros de software.  
 > Cobertura baseada no conteúdo dos slides (`docs/slides/index.html`), na suíte **rest-assured** (Spring Petclinic) e em tópicos frequentes em empresas brasileiras e internacionais.  
-> **Legenda:** `[SLIDE]` = abordado na apresentação · `[PROJETO]` = presente na suíte Petclinic · `[EXTRA]` = comum em entrevistas, fora dos slides/projeto.
+> **Legenda:** `[SLIDE]` = abordado na apresentação · `[PROJETO]` = presente na suíte Petclinic · `[EXTRA]` = comum em entrevistas, fora dos slides/projeto.  
+> **JSON (72 perguntas com respostas):** PT [`rest-assured-technical-interview-questions.json`](rest-assured-technical-interview-questions.json) · EN [`rest-assured-technical-interview-questions-en.json`](rest-assured-technical-interview-questions-en.json) · fonte canônica no curriculum: [`rest-assured-qa-pt.json`](https://github.com/lflucasferreira/curriculum/blob/main/src/data/rest-assured-qa-pt.json) / [`rest-assured-qa-en.json`](https://github.com/lflucasferreira/curriculum/blob/main/src/data/rest-assured-qa-en.json). Regenerar: `python3 curriculum/scripts/generate-rest-assured-qa.py` e `python3 curriculum/scripts/generate-rest-assured-qa-en.py`.
 
 ---
 
