@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Visit {
 
     private Integer id;
+    private Integer petId;
     private String date;
     private String description;
 
@@ -15,6 +16,14 @@ public class Visit {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getPetId() {
+        return petId;
+    }
+
+    public void setPetId(Integer petId) {
+        this.petId = petId;
     }
 
     public String getDate() {

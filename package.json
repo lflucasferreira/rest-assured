@@ -6,6 +6,7 @@
   "scripts": {
     "slides": "npx serve . -p 3335",
     "slides:open": "npx serve . -p 3335 & sleep 1 && open http://localhost:3335/docs/",
+    "slides:pdf": "node scripts/generate-slides-pdf.mjs",
     "report:allure": "node scripts/generate-allure-report.mjs",
     "allure:merge-results": "node scripts/merge-allure-results.mjs",
     "pages:prepare-allure": "node scripts/prepare-allure-for-pages.mjs",

@@ -86,8 +86,12 @@
         </ul>
         <h2>Avançado</h2>
         <ul>
+          <li><a href="#coverage">Cobertura da suite</a></li>
           <li><a href="#network">Captura de rede</a></li>
           <li><a href="#wiremock">WireMock</a></li>
+          <li><a href="#security">Segurança &amp; RBAC</a></li>
+          <li><a href="#openapi">OpenAPI &amp; contratos</a></li>
+          <li><a href="#tags">Tags JUnit</a></li>
           <li><a href="#parameterized">Testes parametrizados</a></li>
         </ul>
         <h2>Encerramento</h2>
@@ -109,7 +113,7 @@
           </div>
           <h1>Rest Assured — Guia passo a passo</h1>
           <p class="subtitle">
-            Do zero à referência completa: Maven, camada de clients, JSON schemas, WireMock, fluxos e CI.
+            Do zero à referência completa: Maven, clients, JSON schemas, WireMock, segurança, OpenAPI e CI — <strong>98 testes</strong>.
           </p>
           <span class="badge">API · Java 17 · Spring Petclinic REST</span>
         </header>
@@ -145,31 +149,53 @@ docker --version</code></pre>
           <pre><code class="language-bash">git clone https://github.com/lflucasferreira/rest-assured.git
 cd rest-assured
 
-# Opção A — Docker (API + testes)
+# Opção A — Docker (API padrão + API segura + testes)
 docker compose up --abort-on-container-exit --exit-code-from tests
 
 # Opção B — Maven local (suba a API antes)
 docker run -p 9966:9966 springcommunity/spring-petclinic-rest:latest
+docker run -p 9967:9966 -e PETCLINIC_SECURITY_ENABLE=true springcommunity/spring-petclinic-rest:latest
 mvn clean test</code></pre>
         </section>
 
         <section id="structure">
           <h2>Estrutura do projeto</h2>
           <pre><code class="language-text">src/test/java/com/portfolio/petclinic/
-├── base/BaseTest.java          # Clients &amp; request spec compartilhados
-├── clients/                    # Camada HTTP
-├── models/                     # POJOs
+├── base/BaseTest.java
+├── clients/                    # Actuator, Owners, Pets, Visits, Vets, ...
+├── models/                     # POJOs + User, Vet, Specialty
 ├── tests/
-│   ├── OwnersApiTest.java
-│   ├── PetsApiTest.java
-│   ├── advanced/               # WireMock, contratos, rede
-│   ├── flows/                  # Orquestração multi-etapa
-│   └── negative/               # Caminhos de erro parametrizados
+│   ├── smoke/                  # ActuatorSmokeTest
+│   ├── security/               # Basic Auth, RBAC, Users
+│   ├── advanced/               # WireMock, OpenAPI, performance
+│   ├── flows/                  # PetLifecycleFlowTest
+│   └── negative/               # Cenários de erro parametrizados
 └── utils/                      # Config, factories, validators
 
 src/test/resources/
-├── config/dev.properties
-└── schemas/*.json</code></pre>
+├── config/dev.properties       # API 9966 + secure 9967
+├── config/docker.properties
+└── schemas/*.json              # owner, pet, visit, vet, openapi, ...</code></pre>
+        </section>
+
+        <section id="coverage">
+          <h2>Cobertura da suite (98 testes)</h2>
+          <p>Resumo dos pacotes e clients adicionados na expansão da suite:</p>
+          <table class="compare-table">
+            <thead>
+              <tr><th>Área</th><th>Classes de teste</th><th>Endpoints principais</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Owners</td><td><code>OwnersApiTest</code>, <code>OwnersNegativeApiTest</code>, <code>OwnersV2ApiTest</code></td><td>GET/POST/PUT/DELETE <code>/owners</code>, paginação <code>/v2/owners</code></td></tr>
+              <tr><td>Pets</td><td><code>PetsApiTest</code>, <code>PetsNestedApiTest</code>, <code>PetsNegativeApiTest</code></td><td><code>/pets</code>, <code>/owners/{id}/pets</code></td></tr>
+              <tr><td>Visits</td><td><code>VisitsApiTest</code>, <code>VisitsNegativeApiTest</code></td><td>CRUD <code>/visits</code>, POST nested</td></tr>
+              <tr><td>Vets &amp; Specialties</td><td><code>VetsApiTest</code>, <code>SpecialtiesApiTest</code></td><td>CRUD <code>/vets</code>, <code>/specialties</code></td></tr>
+              <tr><td>Pet types</td><td><code>PetTypesApiTest</code></td><td>CRUD <code>/pettypes</code></td></tr>
+              <tr><td>Smoke</td><td><code>ActuatorSmokeTest</code></td><td><code>/actuator/health</code></td></tr>
+              <tr><td>Segurança</td><td><code>SecurityApiTest</code>, <code>SecurityAuthorizationTest</code>, <code>UsersApiTest</code></td><td>Basic Auth na API <code>:9967</code></td></tr>
+              <tr><td>Avançado</td><td><code>OpenApiContractTest</code>, <code>WireMockResilienceTest</code>, <code>PerformanceSmokeTest</code>, …</td><td>OpenAPI, SLA, integridade</td></tr>
+            </tbody>
+          </table>
         </section>
 
         <section id="clients">
@@ -226,6 +252,39 @@ NetworkInspector.assertResponseSequenceContains(networkCapture, "/owners", "/pet
 
 WireMock.verify(postRequestedFor(urlEqualTo("/audit/owner-created"))
     .withRequestBody(equalToJson(expectedJson, true, true)));</code></pre>
+          <p>Cenários adicionais em <code>WireMockResilienceTest</code> (timeout, JSON inválido, connection reset) e <code>WireMockRetryIntegrationTest</code> (retry após 503).</p>
+        </section>
+
+        <section id="security">
+          <h2>Segurança &amp; RBAC</h2>
+          <p>Docker Compose sobe duas instâncias da API:</p>
+          <ul>
+            <li><strong>9966</strong> — sem autenticação (padrão)</li>
+            <li><strong>9967</strong> — <code>PETCLINIC_SECURITY_ENABLE=true</code>, Basic Auth <code>admin:admin</code></li>
+          </ul>
+          <pre><code class="language-java">OwnersClient.secured().getAllOwners();
+OwnersClient.withCredentials("admin", "admin").createOwner(payload);
+UsersClient.secured().createUser(TestDataFactory.buildUniqueSecureUser("OWNER_ADMIN"));</code></pre>
+          <p><code>SecurityApiTest</code> valida 401/200. <code>SecurityAuthorizationTest</code> testa RBAC (VET_ADMIN vs OWNER_ADMIN) quando o login de usuários provisionados está disponível.</p>
+        </section>
+
+        <section id="openapi">
+          <h2>OpenAPI &amp; contratos</h2>
+          <pre><code class="language-java">// Documento completo
+openApiClient.getApiDocs(); // GET /v3/api-docs
+
+// Validação por operação
+OpenApiResponseValidator.assertResponseMatchesDocumentedOperation(
+    openApiResponse, apiResponse, "/api/owners", "get");</code></pre>
+          <p>Schemas em <code>schemas/openapi-docs-schema.json</code>, <code>visit-schema.json</code>, <code>vet-schema.json</code>, <code>specialty-schema.json</code>, <code>owners-page-schema.json</code>.</p>
+        </section>
+
+        <section id="tags">
+          <h2>Tags JUnit</h2>
+          <pre><code class="language-bash">mvn test -Dtest.groups=smoke        # Actuator
+mvn test -Dtest.groups=security     # API segura
+mvn test -Dtest.groups=performance  # SLA de tempo
+mvn test -Dtest.groups=contract     # OpenAPI por operação</code></pre>
         </section>
 
         <section id="parameterized">
@@ -241,8 +300,10 @@ void shouldReturnExpectedStatusForInvalidOwnerIds(int ownerId, int expectedStatu
         <section id="run-tests">
           <h2>Como executar</h2>
           <pre><code class="language-bash">mvn clean test
-mvn test -Dtest=OwnersApiTest
-mvn test -Denv=dev -Dapi.base.uri=http://localhost:9966/petclinic/api
+mvn test -Dtest=VisitsApiTest
+mvn test -Denv=dev -Dapi.base.uri=http://localhost:9966/petclinic/api \
+  -Dapi.secure.base.uri=http://localhost:9967/petclinic/api
+mvn test -Dtest.groups=smoke
 mvn allure:serve</code></pre>
         </section>
 
@@ -250,9 +311,9 @@ mvn allure:serve</code></pre>
           <h2>CI — GitHub Actions</h2>
           <p>Workflow <code>.github/workflows/api-tests.yml</code>:</p>
           <ul>
-            <li>Service container: <code>springcommunity/spring-petclinic-rest:latest</code></li>
+            <li>Dois service containers: API padrão (<code>9966</code>) e API segura (<code>9967</code>)</li>
             <li>Health check no Actuator <code>/actuator/health</code></li>
-            <li><code>mvn clean test</code> em todo PR e push para <code>main</code></li>
+            <li><code>mvn clean test</code> — 98 testes, gate em todo PR/push para <code>main</code></li>
             <li>Relatório Allure publicado no GitHub Pages em push para <code>main</code></li>
           </ul>
         </section>
@@ -262,7 +323,7 @@ mvn allure:serve</code></pre>
           <ul>
             <li><a href="pt/README.md">Walkthroughs em Português</a> — bloco a bloco por classe</li>
             <li><a href="en/README.md">English walkthroughs</a></li>
-            <li><a href="slides/index.html">Slides Reveal.js</a></li>
+            <li><a href="slides/index.html">Slides Reveal.js</a> · <a href="slides/rest-assured-intro-slides.pdf">PDF</a></li>
             <li><a href="rest-assured-technical-interview-questions.md">Perguntas de entrevista (PT)</a></li>
           </ul>
         </section>

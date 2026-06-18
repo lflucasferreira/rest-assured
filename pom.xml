@@ -25,6 +25,7 @@
         <wiremock.version>3.9.1</wiremock.version>
 
         <env>dev</env>
+        <test.groups></test.groups>
         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
     </properties>
 
@@ -130,6 +131,7 @@
                         <env>${env}</env>
                         <allure.results.directory>${allure.results.directory}</allure.results.directory>
                     </systemPropertyVariables>
+                    <groups>${test.groups}</groups>
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>

@@ -15,6 +15,7 @@ permissions:
 
 env:
   API_BASE_URI: http://localhost:9966/petclinic/api
+  API_SECURE_BASE_URI: http://localhost:9967/petclinic/api
   MAVEN_OPTS: -Dmaven.repo.local=${{ github.workspace }}/.m2/repository
 
 jobs:
@@ -27,6 +28,12 @@ jobs:
         image: springcommunity/spring-petclinic-rest:latest
         ports:
           - 9966:9966
+      petclinic-secure:
+        image: springcommunity/spring-petclinic-rest:latest
+        ports:
+          - 9967:9966
+        env:
+          PETCLINIC_SECURITY_ENABLE: true
     steps:
       - name: Checkout test suite
         uses: actions/checkout@v5
@@ -43,18 +50,30 @@ jobs:
           for attempt in $(seq 1 30); do
             if curl -sf "${API_BASE_URI%/api}/actuator/health" | grep -q '"status":"UP"'; then
               echo "Petclinic API is ready"
-              exit 0
+              break
             fi
             echo "Waiting for Petclinic API... (${attempt}/30)"
             sleep 10
           done
-          echo "Petclinic API did not become ready in time" >&2
+          if ! curl -sf "${API_BASE_URI%/api}/actuator/health" | grep -q '"status":"UP"'; then
+            echo "Petclinic API did not become ready in time" >&2
+            exit 1
+          fi
+          for attempt in $(seq 1 30); do
+            if curl -sf -o /dev/null -w "%{http_code}" "${API_SECURE_BASE_URI}/owners" | grep -qE '401|403'; then
+              echo "Secure Petclinic API is ready"
+              exit 0
+            fi
+            echo "Waiting for secure Petclinic API... (${attempt}/30)"
+            sleep 10
+          done
+          echo "Secure Petclinic API did not become ready in time" >&2
           exit 1
 
       - name: Run test suite
         env:
           CI: "true"
-        run: mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}"
+        run: mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}" -Dapi.secure.base.uri="${API_SECURE_BASE_URI}"
 
       - name: Upload Allure results
         if: always()

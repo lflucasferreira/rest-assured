@@ -88,4 +88,44 @@ class PetsNegativeApiTest extends BaseTest {
         // Then
         ResponseValidator.assertStatusCode(response.getStatusCode(), 404);
     }
+
+    @Test
+    @Story("Validation error")
+    @DisplayName("POST pet should return 400 for future birth date")
+    void shouldRejectPetWithFutureBirthDate() {
+        Response petTypesResponse = petTypesClient.getAllPetTypes();
+        Response createOwnerResponse = ownersClient.createOwner(TestDataFactory.buildOwner());
+        ResponseValidator.assertStatusCode(createOwnerResponse.getStatusCode(), 201);
+        int ownerId = createOwnerResponse.as(com.portfolio.petclinic.models.Owner.class).getId();
+
+        var petFields = TestDataFactory.buildPetFieldsWithFutureBirthDate(
+                petTypesResponse.jsonPath().getInt("[0].id"),
+                petTypesResponse.jsonPath().getString("[0].name")
+        );
+
+        Response response = petsClient.createPetForOwner(ownerId, petFields);
+        ResponseValidator.assertStatusCode(response.getStatusCode(), 400);
+
+        ownersClient.deleteOwner(ownerId);
+    }
+
+    @Test
+    @Story("Validation error")
+    @DisplayName("POST pet should return server error for empty pet name")
+    void shouldRejectPetWithEmptyName() {
+        Response petTypesResponse = petTypesClient.getAllPetTypes();
+        Response createOwnerResponse = ownersClient.createOwner(TestDataFactory.buildOwner());
+        ResponseValidator.assertStatusCode(createOwnerResponse.getStatusCode(), 201);
+        int ownerId = createOwnerResponse.as(com.portfolio.petclinic.models.Owner.class).getId();
+
+        var petFields = TestDataFactory.buildPetFieldsWithEmptyName(
+                petTypesResponse.jsonPath().getInt("[0].id"),
+                petTypesResponse.jsonPath().getString("[0].name")
+        );
+
+        Response response = petsClient.createPetForOwner(ownerId, petFields);
+        ResponseValidator.assertStatusCode(response.getStatusCode(), 500);
+
+        ownersClient.deleteOwner(ownerId);
+    }
 }

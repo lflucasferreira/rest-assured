@@ -74,4 +74,37 @@ class OwnersNegativeApiTest extends BaseTest {
         // Then
         ResponseValidator.assertStatusCode(response.getStatusCode(), 404);
     }
+
+    @Test
+    @Story("Validation error")
+    @DisplayName("POST /owners should return 400 for empty required fields")
+    void shouldRejectOwnerWithEmptyRequiredFields() {
+        Response response = ownersClient.createOwner(TestDataFactory.buildEmptyOwner());
+        ResponseValidator.assertStatusCode(response.getStatusCode(), 400);
+    }
+
+    @Test
+    @Story("Invalid update")
+    @DisplayName("PUT /owners/{id} should return 404 for unknown owner")
+    void shouldReturnNotFoundWhenUpdatingUnknownOwner() {
+        Owner payload = TestDataFactory.buildOwner();
+        payload.setId(99999);
+        Response response = ownersClient.updateOwner(99999, payload);
+        ResponseValidator.assertStatusCode(response.getStatusCode(), 404);
+    }
+
+    @Test
+    @Story("Invalid update")
+    @DisplayName("PUT /owners/{id} should return 400 for invalid telephone")
+    void shouldRejectOwnerUpdateWithInvalidTelephone() {
+        Response createResponse = ownersClient.createOwner(TestDataFactory.buildOwner());
+        ResponseValidator.assertStatusCode(createResponse.getStatusCode(), 201);
+        Owner owner = createResponse.as(Owner.class);
+
+        owner.setTelephone("INVALID");
+        Response response = ownersClient.updateOwner(owner.getId(), owner);
+        ResponseValidator.assertStatusCode(response.getStatusCode(), 400);
+
+        ownersClient.deleteOwner(owner.getId());
+    }
 }

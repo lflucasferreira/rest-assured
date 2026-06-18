@@ -63,7 +63,7 @@
             <span class="wordmark">Rest Assured</span>
           </div>
           <h1>Rest Assured Automation Suite</h1>
-          <p class="subtitle">Instalação, clients, schemas, WireMock e CI</p>
+          <p class="subtitle">Instalação, clients, schemas, segurança, OpenAPI e CI — 98 testes</p>
           <span class="badge">Automação · Java 17 · Spring Petclinic REST</span>
         </section>
 
@@ -189,16 +189,65 @@ NetworkInspector.assertResponseSequenceContains(networkCapture, "/owners", "/pet
           <ul>
             <li class="fragment">Stub de webhook <code>/audit/owner-created</code></li>
             <li class="fragment"><code>WireMock.verify()</code> com JSON exato</li>
-            <li class="fragment">Injeção de falha 503 para resiliência</li>
+            <li class="fragment">Resiliência: timeout, JSON inválido, connection reset</li>
+            <li class="fragment">Retry após 503 com cenário WireMock</li>
           </ul>
+        </section>
+
+        <section>
+          <h2>Cobertura — 98 testes</h2>
+          <div class="feature-grid">
+            <div class="feature-card fragment fade-up">
+              <h4>Domínio</h4>
+              <p>Owners, Pets, Visits, Vets, Specialties, PetTypes, API v2.</p>
+            </div>
+            <div class="feature-card fragment fade-up">
+              <h4>Smoke</h4>
+              <p>Actuator health + OpenAPI <code>/v3/api-docs</code>.</p>
+            </div>
+            <div class="feature-card fragment fade-up">
+              <h4>Segurança</h4>
+              <p>Basic Auth, RBAC, POST <code>/users</code> na API :9967.</p>
+            </div>
+            <div class="feature-card fragment fade-up">
+              <h4>Avançado</h4>
+              <p>SLA, integridade referencial, content negotiation.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>Visits &amp; recursos novos</h2>
+          <pre><code class="language-java">visitsClient.addVisit(ownerId, petId, visitFields);
+visitsClient.updateVisit(visitId, updatePayload);
+ownersClient.getOwnerPetById(ownerId, petId);
+ownersV2Client.getOwnersPage(0, 2, lastName);</code></pre>
+        </section>
+
+        <section>
+          <h2>Segurança dual-API</h2>
+          <ul>
+            <li class="fragment"><code>9966</code> — API aberta (dev/Docker padrão)</li>
+            <li class="fragment"><code>9967</code> — <code>PETCLINIC_SECURITY_ENABLE=true</code></li>
+            <li class="fragment"><code>OwnersClient.secured()</code> · <code>withCredentials()</code></li>
+            <li class="fragment"><code>@Tag("security")</code> para suite isolada</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Tags JUnit</h2>
+          <pre><code class="language-bash">mvn test -Dtest.groups=smoke
+mvn test -Dtest.groups=security
+mvn test -Dtest.groups=performance
+mvn test -Dtest.groups=contract</code></pre>
         </section>
 
         <section>
           <h2>CI — GitHub Actions</h2>
           <ul>
-            <li class="fragment">Service container: <code>spring-petclinic-rest</code></li>
+            <li class="fragment">Dois service containers: API padrão + API segura</li>
             <li class="fragment">Health check via Actuator</li>
-            <li class="fragment"><code>mvn clean test -Dapi.base.uri=...</code></li>
+            <li class="fragment"><code>mvn clean test</code> — 98 testes</li>
             <li class="fragment">Allure publicado no GitHub Pages em push para <code>main</code></li>
           </ul>
         </section>
@@ -208,7 +257,8 @@ NetworkInspector.assertResponseSequenceContains(networkCapture, "/owners", "/pet
           <ul>
             <li><a href="../index.html">Hub de documentação</a></li>
             <li><a href="../en/README.md">Walkthroughs EN</a> · <a href="../pt/README.md">PT</a></li>
-            <li><a href="../complete-guide.html">Complete Guide</a></li>
+            <li><a href="../guia-completo.html">Guia completo (PT)</a></li>
+            <li><a href="../slides/rest-assured-intro-slides.pdf">Slides PDF</a></li>
             <li><a href="../api-testing-strategy.md">Rest Assured testing strategy</a></li>
           </ul>
         </section>

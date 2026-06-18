@@ -6,7 +6,8 @@ Apresentação Reveal.js do Rest Assured Automation Suite (clients, JUnit 5, Spr
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `index.html` | Apresentação interativa (Reveal.js) |
+| `index.html` | Apresentação interativa (Reveal.js) — 19 slides |
+| `rest-assured-intro-slides.pdf` | Export PDF da apresentação |
 | `css/theme-rest-assured.css` | Tema visual Rest Assured |
 | `assets/rest-assured-logo-light.png` | Logo original — [GitHub org avatar](https://avatars.githubusercontent.com/u/19369327?v=4) |
 | `assets/rest-assured-logo-dark.png` | Variante site (reserva) — [rest-assured.io](https://rest-assured.io/img/logo-transparent.png) |

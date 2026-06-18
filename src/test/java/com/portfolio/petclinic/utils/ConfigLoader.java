@@ -35,14 +35,36 @@ public final class ConfigLoader {
     }
 
     private static void overrideFromSystemProperties(Properties properties) {
-        String baseUriOverride = System.getProperty("api.base.uri");
-        if (baseUriOverride != null && !baseUriOverride.isBlank()) {
-            properties.setProperty("api.base.uri", baseUriOverride);
+        overrideProperty(properties, "api.base.uri");
+        overrideProperty(properties, "api.secure.base.uri");
+        overrideProperty(properties, "api.petclinic.root.uri");
+    }
+
+    private static void overrideProperty(Properties properties, String key) {
+        String value = System.getProperty(key);
+        if (value != null && !value.isBlank()) {
+            properties.setProperty(key, value);
         }
     }
 
     public static String getBaseUri() {
         return PROPERTIES.getProperty("api.base.uri");
+    }
+
+    public static String getSecureBaseUri() {
+        return PROPERTIES.getProperty("api.secure.base.uri");
+    }
+
+    public static String getPetclinicRootUri() {
+        String configured = PROPERTIES.getProperty("api.petclinic.root.uri");
+        if (configured != null && !configured.isBlank()) {
+            return configured;
+        }
+        return getBaseUri().replaceAll("/api$", "");
+    }
+
+    public static String getOpenApiDocsPath() {
+        return "/v3/api-docs";
     }
 
     public static int getConnectionTimeoutMs() {
@@ -53,11 +75,23 @@ public final class ConfigLoader {
         return Integer.parseInt(PROPERTIES.getProperty("api.socket.timeout.ms", "10000"));
     }
 
+    public static int getWebhookTimeoutMs() {
+        return Integer.parseInt(PROPERTIES.getProperty("webhook.timeout.ms", "3000"));
+    }
+
     public static boolean isLoggingEnabled() {
         return Boolean.parseBoolean(PROPERTIES.getProperty("logging.enabled", "true"));
     }
 
     public static long getMaxResponseTimeMs() {
         return Long.parseLong(PROPERTIES.getProperty("api.response.time.max.ms", "5000"));
+    }
+
+    public static String getAuthUsername() {
+        return PROPERTIES.getProperty("api.auth.username", "admin");
+    }
+
+    public static String getAuthPassword() {
+        return PROPERTIES.getProperty("api.auth.password", "admin");
     }
 }

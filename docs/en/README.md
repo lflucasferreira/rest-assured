@@ -1,8 +1,6 @@
 # Rest Assured Automation Suite — Training Documentation
 
-Instructional material that explains **block by block** each test class in the project. Ideal for new students learning Rest Assured, JUnit 5, and the Rest Assured Automation Suite in Java.
-
-Each document links to the corresponding test file with a relative path.
+Instructional material that explains **block by block** each test class in the project. The current suite has **98 tests** covering owners, pets, visits, vets, specialties, security, OpenAPI, and advanced scenarios.
 
 **Language:** English · [Português](../pt/README.md)
 
@@ -10,16 +8,12 @@ Each document links to the corresponding test file with a relative path.
 
 ## How to use this material
 
-1. Read the doc for the suite you will run or maintain.
-2. Open the [test file](..) linked at the top of the document.
-3. Follow the explanation section by section while reading the code.
-4. Run the suite locally:
-
 ```bash
-docker compose up --abort-on-container-exit --exit-code-from tests   # API + tests in Docker
-mvn clean test                                                       # local Maven (API must be up)
-mvn test -Dtest=OwnersApiTest                                        # single class
-mvn allure:serve                                                     # Allure report
+docker compose up --abort-on-container-exit --exit-code-from tests
+mvn clean test
+mvn test -Dtest=VisitsApiTest
+mvn test -Dtest.groups=smoke
+mvn allure:serve
 ```
 
 ---
@@ -30,76 +24,54 @@ mvn allure:serve                                                     # Allure re
 
 | Suite | Documentation | Test file |
 |-------|---------------|-----------|
-| Owners CRUD & filter | [owners.api.md](tests/owners/owners.api.md) | [`OwnersApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/OwnersApiTest.java) |
+| Owners CRUD, filter & PUT | [owners.api.md](tests/owners/owners.api.md) | [`OwnersApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/OwnersApiTest.java) |
 | Pets CRUD | [pets.api.md](tests/pets/pets.api.md) | [`PetsApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/PetsApiTest.java) |
+| Nested pet route | — | [`PetsNestedApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/PetsNestedApiTest.java) |
+| Owners v2 pagination | — | [`OwnersV2ApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/OwnersV2ApiTest.java) |
 
-### End-to-end flows
+### Expanded domain
 
-| Suite | Documentation | Test file |
-|-------|---------------|-----------|
-| Pet lifecycle | [pet-lifecycle.md](tests/flows/pet-lifecycle.md) | [`PetLifecycleFlowTest.java`](../../src/test/java/com/portfolio/petclinic/tests/flows/PetLifecycleFlowTest.java) |
+| Suite | Test file |
+|-------|-----------|
+| Visits CRUD | [`VisitsApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/VisitsApiTest.java) |
+| Vets CRUD | [`VetsApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/VetsApiTest.java) |
+| Specialties CRUD | [`SpecialtiesApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/SpecialtiesApiTest.java) |
+| Pet types CRUD | [`PetTypesApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/PetTypesApiTest.java) |
+| Actuator smoke | [`ActuatorSmokeTest.java`](../../src/test/java/com/portfolio/petclinic/tests/smoke/ActuatorSmokeTest.java) |
 
-### Advanced QA techniques
+### Security
+
+| Suite | Test file |
+|-------|-----------|
+| Basic Auth | [`SecurityApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/security/SecurityApiTest.java) |
+| RBAC | [`SecurityAuthorizationTest.java`](../../src/test/java/com/portfolio/petclinic/tests/security/SecurityAuthorizationTest.java) |
+| User provisioning | [`UsersApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/security/UsersApiTest.java) |
+
+### Advanced QA
 
 | Suite | Documentation | Test file |
 |-------|---------------|-----------|
 | HTTP contract & caching | [contract-caching.md](tests/advanced/contract-caching.md) | [`ContractAndCachingTest.java`](../../src/test/java/com/portfolio/petclinic/tests/advanced/ContractAndCachingTest.java) |
 | Network inspection | [network-inspection.md](tests/advanced/network-inspection.md) | [`NetworkInspectionTest.java`](../../src/test/java/com/portfolio/petclinic/tests/advanced/NetworkInspectionTest.java) |
-| WireMock notifications | [wiremock-notification.md](tests/advanced/wiremock-notification.md) | [`WireMockNotificationTest.java`](../../src/test/java/com/portfolio/petclinic/tests/advanced/WireMockNotificationTest.java) |
+| WireMock | [wiremock-notification.md](tests/advanced/wiremock-notification.md) | [`WireMockNotificationTest.java`](../../src/test/java/com/portfolio/petclinic/tests/advanced/WireMockNotificationTest.java) |
+| WireMock resilience | — | [`WireMockResilienceTest.java`](../../src/test/java/com/portfolio/petclinic/tests/advanced/WireMockResilienceTest.java) |
+| OpenAPI | — | [`OpenApiContractTest.java`](../../src/test/java/com/portfolio/petclinic/tests/advanced/OpenApiContractTest.java) |
 
 ### Negative scenarios
 
 | Suite | Documentation | Test file |
 |-------|---------------|-----------|
-| Owners — validation & 404 | [owners-negative.md](tests/negative/owners-negative.md) | [`OwnersNegativeApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/negative/OwnersNegativeApiTest.java) |
-| Pets — validation & 404 | [pets-negative.md](tests/negative/pets-negative.md) | [`PetsNegativeApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/negative/PetsNegativeApiTest.java) |
+| Owners | [owners-negative.md](tests/negative/owners-negative.md) | [`OwnersNegativeApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/negative/OwnersNegativeApiTest.java) |
+| Pets | [pets-negative.md](tests/negative/pets-negative.md) | [`PetsNegativeApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/negative/PetsNegativeApiTest.java) |
+| Visits | — | [`VisitsNegativeApiTest.java`](../../src/test/java/com/portfolio/petclinic/tests/negative/VisitsNegativeApiTest.java) |
 
 ---
 
-## Cross-cutting concepts
-
-The docs cover, among other topics:
-
-- **Rest Assured:** `given()`/`when()`/`then()`, `Response`, JsonPath, Hamcrest matchers, `time()` SLA
-- **JUnit 5:** `@Test`, `@BeforeEach`/`@AfterEach`, `@ParameterizedTest`, `@DisplayName`, `@Epic`/`@Feature`/`@Story` (Allure)
-- **API Client layer:** classes in [`clients/`](../../src/test/java/com/portfolio/petclinic/clients/)
-- **POJOs:** request/response models in [`models/`](../../src/test/java/com/portfolio/petclinic/models/)
-- **Test data:** `TestDataFactory` with JavaFaker in [`utils/`](../../src/test/java/com/portfolio/petclinic/utils/)
-- **Schema validation:** JSON schemas in [`resources/schemas/`](../../src/test/resources/schemas/)
-- **Network capture:** custom `Filter` via `NetworkCaptureFilter` and `NetworkInspector`
-- **External mocks:** WireMock stubs and verify in [`WireMockSupport`](../../src/test/java/com/portfolio/petclinic/utils/WireMockSupport.java)
-- **Configuration:** environment profiles via [`ConfigLoader`](../../src/test/java/com/portfolio/petclinic/utils/ConfigLoader.java) — see [`api-testing-strategy.md`](../api-testing-strategy.md)
-
----
-
-## Other materials in `docs/`
+## Other materials
 
 | Resource | Description |
 |----------|-------------|
-| [`slides/`](../slides/) | Introductory Rest Assured presentation (HTML/PDF) |
-| [`guia-completo.html`](../guia-completo.html) | Step-by-step guide in Portuguese (single page) |
-| [`complete-guide.html`](../complete-guide.html) | Step-by-step guide in English (single page) |
-| [`api-testing-strategy.md`](../api-testing-strategy.md) | Client layer, schemas, and assertion patterns |
-| [`rest-assured-technical-interview-questions.md`](../rest-assured-technical-interview-questions.md) | Technical interview question bank (Portuguese) |
-
----
-
-## Folder structure
-
-```
-docs/
-├── README.md                          ← language selector
-├── guia-completo.html                 ← complete guide (PT)
-├── complete-guide.html                ← complete guide (EN)
-├── rest-assured-technical-interview-questions.md
-├── api-testing-strategy.md
-├── en/
-│   ├── README.md                      ← this index (English)
-│   └── tests/                         ← walkthroughs per test class
-├── pt/
-│   ├── README.md                      ← índice (Português)
-│   └── tests/
-└── slides/                            ← Reveal.js presentation only
-```
-
-Each `.md` in `docs/en/tests/` mirrors the homonymous test class under `src/test/java/`.
+| [`slides/`](../slides/) | Reveal.js deck + PDF export |
+| [`complete-guide.html`](../complete-guide.html) | Single-page English guide |
+| [`guia-completo.html`](../guia-completo.html) | Guia em português |
+| [`api-testing-strategy.md`](../api-testing-strategy.md) | Clients, schemas, tags, endpoint map |

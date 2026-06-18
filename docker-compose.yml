@@ -14,6 +14,23 @@ services:
       retries: 18
       start_period: 120s
 
+  petclinic-api-secure:
+    image: springcommunity/spring-petclinic-rest:latest
+    ports:
+      - "9967:9966"
+    environment:
+      PETCLINIC_SECURITY_ENABLE: "true"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- --user=admin --password=admin http://localhost:9966/petclinic/actuator/health 2>/dev/null | grep -q '\"status\":\"UP\"' || exit 1",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 18
+      start_period: 120s
+
   tests:
     image: maven:3.9.9-eclipse-temurin-17
     working_dir: /workspace
@@ -23,5 +40,7 @@ services:
       MAVEN_OPTS: "-Dmaven.repo.local=/workspace/.m2/repository"
     depends_on:
       petclinic-api:
+        condition: service_healthy
+      petclinic-api-secure:
         condition: service_healthy
     command: mvn -B clean test -Denv=docker

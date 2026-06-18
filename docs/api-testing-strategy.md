@@ -2,6 +2,8 @@
 
 This Rest Assured project validates the [Spring Petclinic REST](https://github.com/spring-petclinic/spring-petclinic-rest) API exclusively through **HTTP clients**, **POJO models**, and **JSON schema contracts**. There are no browser or UI tests in this repository.
 
+**Current suite size:** 98 tests (7 optional skips for environment-dependent scenarios).
+
 ## Client layer
 
 All HTTP calls go through dedicated client classes in [`src/test/java/com/portfolio/petclinic/clients/`](../src/test/java/com/portfolio/petclinic/clients/):
@@ -24,9 +26,11 @@ Test classes should **not** call `RestAssured.given()` directly — use clients 
 
 ```java
 @BeforeEach
-void setUp() {
-    RestAssured.requestSpecification = requestSpec;
-    networkCapture.reset();
+void initClients() {
+    networkCapture = new NetworkCaptureFilter();
+    ownersClient = new OwnersClient(networkCapture);
+    petsClient = new PetsClient(networkCapture);
+    // ...
 }
 ```
 
@@ -40,6 +44,7 @@ void setUp() {
 | JsonPath | `response.jsonPath().getString("[0].lastName")` | Targeted extraction without full mapping |
 | Error bodies | `ErrorResponseValidator.assertErrorStatusAndOptionalProblemDetail` | 4xx/5xx with optional RFC 7807 body |
 | SLA | `response.then().time(lessThan(ms))` | Performance guardrails |
+| OpenAPI | `OpenApiResponseValidator.assertResponseMatchesDocumentedOperation` | Per-operation contract checks |
 
 ## JSON schemas
 
@@ -49,6 +54,11 @@ Schemas live in [`src/test/resources/schemas/`](../src/test/resources/schemas/):
 |--------|----------|
 | `owner-schema.json` | Owner responses |
 | `pet-schema.json` | Pet responses |
+| `visit-schema.json` | Visit responses |
+| `vet-schema.json` | Veterinarian responses |
+| `specialty-schema.json` | Specialty responses |
+| `owners-page-schema.json` | Paginated `/v2/owners` |
+| `openapi-docs-schema.json` | OpenAPI document smoke |
 | `problem-detail-schema.json` | RFC 7807 error payloads |
 
 ## Test data
@@ -60,7 +70,27 @@ Schemas live in [`src/test/resources/schemas/`](../src/test/resources/schemas/):
 [`ConfigLoader`](../src/test/java/com/portfolio/petclinic/utils/ConfigLoader.java) reads `src/test/resources/config/{env}.properties`:
 
 ```bash
-mvn clean test -Denv=dev -Dapi.base.uri=http://localhost:9966/petclinic/api
+mvn clean test -Denv=dev \
+  -Dapi.base.uri=http://localhost:9966/petclinic/api \
+  -Dapi.secure.base.uri=http://localhost:9967/petclinic/api
+```
+
+| Property | Purpose |
+|----------|---------|
+| `api.base.uri` | Default API (no auth) |
+| `api.secure.base.uri` | Secure API with Basic Auth |
+| `api.petclinic.root.uri` | Actuator & OpenAPI root |
+| `webhook.timeout.ms` | WireMock client timeout |
+
+## JUnit tags
+
+Run subsets via Maven Surefire groups (`pom.xml` → `test.groups`):
+
+```bash
+mvn test -Dtest.groups=smoke
+mvn test -Dtest.groups=security
+mvn test -Dtest.groups=performance
+mvn test -Dtest.groups=contract
 ```
 
 ## Network inspection
@@ -69,7 +99,20 @@ A custom Rest Assured `Filter` (`NetworkCaptureFilter`) records the last HTTP ex
 
 ## External service mocking
 
-[`WireMockSupport`](../src/test/java/com/portfolio/petclinic/utils/WireMockSupport.java) starts an embedded WireMock server for outbound webhook simulations. Use `WireMock.verify()` to assert request payloads without hitting real downstream systems.
+[`WireMockSupport`](../src/test/java/com/portfolio/petclinic/utils/WireMockSupport.java) starts an embedded WireMock server for outbound webhook simulations. Suites:
+
+- `WireMockNotificationTest` — happy path + 503 fault
+- `WireMockResilienceTest` — timeout, malformed JSON, connection reset
+- `WireMockRetryIntegrationTest` — retry after transient failure
+
+## Security testing
+
+Docker Compose and CI run two API instances:
+
+- **9966** — `petclinic-api` (no auth)
+- **9967** — `petclinic-api-secure` (`PETCLINIC_SECURITY_ENABLE=true`)
+
+Use `OwnersClient.secured()`, `OwnersClient.withCredentials(user, pass)`, and `@Tag("security")` tests. RBAC tests provision users via `UsersClient` when the image supports login for `POST /users`.
 
 ## What this repo does not use
 
@@ -81,11 +124,17 @@ A custom Rest Assured `Filter` (`NetworkCaptureFilter`) records the last HTTP ex
 
 | Client | Base path | Test classes |
 |--------|-----------|--------------|
-| `OwnersClient` | `/owners` | `OwnersApiTest`, `OwnersNegativeApiTest`, flows |
-| `PetsClient` | `/pets`, `/owners/{id}/pets` | `PetsApiTest`, `PetsNegativeApiTest`, flows |
-| `PetTypesClient` | `/pettypes` | `PetsApiTest`, flows |
-| `VisitsClient` | `/owners/{id}/pets/{id}/visits` | `PetLifecycleFlowTest` |
+| `ActuatorClient` | `/actuator` | `ActuatorSmokeTest` |
+| `OwnersClient` | `/owners` | `OwnersApiTest`, `OwnersNegativeApiTest`, flows, security |
+| `OwnersV2Client` | `/v2/owners` | `OwnersV2ApiTest`, `OwnersV2NegativeApiTest` |
+| `PetsClient` | `/pets`, `/owners/{id}/pets` | `PetsApiTest`, `PetsNestedApiTest`, `PetsNegativeApiTest`, flows |
+| `VisitsClient` | `/visits`, nested visits | `VisitsApiTest`, `VisitsNegativeApiTest`, flows |
+| `PetTypesClient` | `/pettypes` | `PetTypesApiTest`, `PetsApiTest`, flows |
+| `VetsClient` | `/vets` | `VetsApiTest`, security |
+| `SpecialtiesClient` | `/specialties` | `SpecialtiesApiTest`, security |
+| `OpenApiClient` | `/v3/api-docs` | `OpenApiContractTest`, `OpenApiOperationContractTest` |
+| `UsersClient` | `/users` | `UsersApiTest`, security |
 | `DiagnosticsClient` | `/oops` | `ContractAndCachingTest` |
-| `AuditNotificationClient` | WireMock `/audit/owner-created` | `WireMockNotificationTest` |
+| `AuditNotificationClient` | WireMock `/audit/owner-created` | WireMock suites |
 
 When the API adds a new resource, add a client method rather than inlining Rest Assured calls in test classes.

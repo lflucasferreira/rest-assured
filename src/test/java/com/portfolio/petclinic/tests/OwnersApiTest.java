@@ -123,4 +123,34 @@ class OwnersApiTest extends BaseTest {
             assertThat(owner.getLastName(), is(lastName))
         );
     }
+
+    @Test
+    @Story("Update owner")
+    @DisplayName("PUT /owners/{id} should update an existing owner")
+    void shouldUpdateOwnerSuccessfully() {
+        // Given: a newly created owner
+        Owner ownerPayload = TestDataFactory.buildOwner();
+        Response createResponse = ownersClient.createOwner(ownerPayload);
+        ResponseValidator.assertStatusCode(createResponse.getStatusCode(), 201);
+        Owner createdOwner = createResponse.as(Owner.class);
+
+        String updatedLastName = createdOwner.getLastName() + "Updated";
+        String updatedCity = "UpdatedCity";
+        Owner updatePayload = TestDataFactory.buildOwnerUpdatePayload(createdOwner, updatedLastName, updatedCity);
+
+        // When: updating the owner
+        Response updateResponse = ownersClient.updateOwner(createdOwner.getId(), updatePayload);
+
+        // Then: owner is updated (API returns 204 No Content)
+        ResponseValidator.assertStatusCode(updateResponse.getStatusCode(), 204);
+
+        Response getResponse = ownersClient.getOwnerById(createdOwner.getId());
+        ResponseValidator.assertStatusCode(getResponse.getStatusCode(), 200);
+
+        Owner updatedOwner = getResponse.as(Owner.class);
+        assertThat(updatedOwner.getLastName(), is(updatedLastName));
+        assertThat(updatedOwner.getCity(), is(updatedCity));
+
+        ownersClient.deleteOwner(createdOwner.getId());
+    }
 }
