@@ -38,11 +38,6 @@ jobs:
         image: springcommunity/spring-petclinic-rest:latest
         ports:
           - 9966:9966
-        options: >-
-          --health-interval 15s
-          --health-timeout 10s
-          --health-retries 12
-          --health-start-period 120s
     steps:
       - name: Checkout test suite
         uses: actions/checkout@v5
@@ -92,11 +87,6 @@ jobs:
         image: springcommunity/spring-petclinic-rest:latest
         ports:
           - 9966:9966
-        options: >-
-          --health-interval 15s
-          --health-timeout 10s
-          --health-retries 12
-          --health-start-period 120s
     steps:
       - name: Checkout test suite
         uses: actions/checkout@v5
@@ -164,11 +154,6 @@ jobs:
         image: springcommunity/spring-petclinic-rest:latest
         ports:
           - 9966:9966
-        options: >-
-          --health-interval 15s
-          --health-timeout 10s
-          --health-retries 12
-          --health-start-period 120s
     steps:
       - name: Checkout test suite
         uses: actions/checkout@v5
