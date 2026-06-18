@@ -7,4 +7,8 @@ target/
 .DS_Store
 *.log
 allure-report/
+allure-results/
+pages-allure-staging/
+site/
+node_modules/
 .m2/

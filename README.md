@@ -86,6 +86,21 @@ mvn clean test
 mvn allure:serve
 ```
 
+Published on GitHub Pages after each push to `main`:
+
+- Hub: https://lflucasferreira.github.io/rest-assured/
+- Report: https://lflucasferreira.github.io/rest-assured/report/
+
+Local Pages build (same as CI):
+
+```bash
+npm ci
+mvn clean test
+npm run allure:merge-results   # optional if using target/allure-results only
+npm run pages:prepare-allure
+npm run pages:build
+```
+
 ## API Coverage
 
 | Method | Endpoint | Test Class |

@@ -1,0 +1,15 @@
+{
+  "name": "petclinic-api-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rest Assured API test automation for Spring Petclinic REST",
+  "scripts": {
+    "report:allure": "node scripts/generate-allure-report.mjs",
+    "allure:merge-results": "node scripts/merge-allure-results.mjs",
+    "pages:prepare-allure": "node scripts/prepare-allure-for-pages.mjs",
+    "pages:build": "node scripts/build-pages-site.mjs"
+  },
+  "devDependencies": {
+    "allure": "^3.11.0"
+  }
+}

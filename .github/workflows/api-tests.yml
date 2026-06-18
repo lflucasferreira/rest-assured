@@ -67,14 +67,20 @@ jobs:
           CI: "true"
         run: mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}"
 
-      - name: Upload test reports
+      - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: api-test-reports
-          path: |
-            target/allure-results/
-            target/surefire-reports/
+          name: allure-results-api
+          path: target/allure-results/
+          if-no-files-found: ignore
+
+      - name: Upload Surefire reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-reports-api
+          path: target/surefire-reports/
           if-no-files-found: ignore
 
   test-manual:
@@ -127,21 +133,19 @@ jobs:
               ;;
           esac
 
-      - name: Upload test reports
+      - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: api-test-reports-${{ github.event.inputs.profile }}
-          path: |
-            target/allure-results/
-            target/surefire-reports/
+          name: allure-results-api-${{ github.event.inputs.profile }}
+          path: target/allure-results/
           if-no-files-found: ignore
 
   publish-pages:
-    name: Build report & publish GitHub Pages
+    name: Build site & publish GitHub Pages
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    timeout-minutes: 20
+    timeout-minutes: 10
     permissions:
       contents: read
       pages: write
@@ -149,44 +153,20 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    services:
-      petclinic:
-        image: springcommunity/spring-petclinic-rest:latest
-        ports:
-          - 9966:9966
     steps:
       - name: Checkout test suite
         uses: actions/checkout@v5
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
         with:
-          distribution: temurin
-          java-version: 17
-          cache: maven
+          node-version: 24
 
-      - name: Verify Petclinic API is reachable
-        run: |
-          for attempt in $(seq 1 30); do
-            if curl -sf "${API_BASE_URI%/api}/actuator/health" | grep -q '"status":"UP"'; then
-              echo "Petclinic API is ready"
-              exit 0
-            fi
-            echo "Waiting for Petclinic API... (${attempt}/30)"
-            sleep 10
-          done
-          echo "Petclinic API did not become ready in time" >&2
-          exit 1
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Run API tests and generate Allure report
-        env:
-          CI: "true"
-        run: |
-          mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}"
-          wget -q https://github.com/allure-framework/allure2/releases/download/2.29.0/allure-2.29.0.tgz
-          tar -xzf allure-2.29.0.tgz
-          ./allure-2.29.0/bin/allure generate target/allure-results -o site --clean
-          touch site/.nojekyll
+      - name: Build GitHub Pages site
+        run: npm run pages:build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
@@ -197,3 +177,91 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  publish-allure:
+    name: Publish Allure report to GitHub Pages
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+    needs:
+      - test
+      - publish-pages
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    timeout-minutes: 15
+    permissions:
+      actions: write
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout test suite
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download Allure results (api)
+        if: always()
+        uses: actions/download-artifact@v7
+        with:
+          name: allure-results-api
+          path: allure-results-staging/allure-results-api
+        continue-on-error: true
+
+      - name: Merge Allure results
+        if: always()
+        run: npm run allure:merge-results
+
+      - name: Prepare Allure report for Pages
+        if: always()
+        run: npm run pages:prepare-allure
+        continue-on-error: true
+
+      - name: Build GitHub Pages site
+        run: npm run pages:build
+
+      - name: Delete previous Pages artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ids="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" \
+            --jq '.artifacts[] | select(.name == "github-pages") | .id')"
+          if [ -z "$ids" ]; then
+            echo "No github-pages artifact to delete"
+            exit 0
+          fi
+          for id in $ids; do
+            echo "Deleting artifact ${id}"
+            gh api -X DELETE "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}"
+          done
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+          include-hidden-files: true
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-report-pages
+          path: |
+            allure-report/
+            allure-results/
+            pages-allure-staging/
+            site/report/
+          if-no-files-found: ignore
