@@ -1,10 +1,10 @@
-# Spring Petclinic API Test Automation
+# Rest Assured Automation Suite
 
-Production-quality API test automation framework for the [Spring Petclinic REST](https://github.com/spring-petclinic/spring-petclinic-rest) application, built with **Java 17**, **Rest Assured**, **JUnit 5**, and **Maven**.
+Production-quality Rest Assured automation suite for the [Spring Petclinic REST](https://github.com/spring-petclinic/spring-petclinic-rest) application, built with **Java 17**, **Rest Assured**, **JUnit 5**, and **Maven**.
 
 ## Description
 
-This project demonstrates a scalable API testing architecture suitable for QA automation portfolios. It validates core Petclinic endpoints (owners and pets), uses reusable API clients, dynamic test data, JSON schema validation, Allure reporting, and Docker-based execution for local and CI environments.
+This project demonstrates a scalable Rest Assured testing architecture suitable for QA automation portfolios. It validates core Petclinic endpoints (owners and pets), uses reusable API clients, dynamic test data, JSON schema validation, Allure reporting, and Docker-based execution for local and CI environments.
 
 **Training documentation:** [`docs/`](docs/) — walkthroughs (EN/PT), slides, complete guides, and interview questions. Open [`docs/index.html`](docs/index.html) locally or run `npm run slides`.
 
@@ -92,7 +92,7 @@ mvn allure:serve
 Published on GitHub Pages after each push to `main`:
 
 - Hub: https://lflucasferreira.github.io/rest-assured/
-- Report: https://lflucasferreira.github.io/rest-assured/report/
+- Report: https://lflucasferreira.github.io/rest-assured/report/index.html
 
 Local Pages build (same as CI):
 

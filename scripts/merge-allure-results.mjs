@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const resultsDir = path.join(root, 'allure-results')
 const stagingDir = path.join(root, process.env.ALLURE_STAGING_DIR ?? 'allure-results-staging')
-const projectName = process.env.ALLURE_PROJECT_NAME ?? 'petclinic-api-tests'
+const projectName = process.env.ALLURE_PROJECT_NAME ?? 'rest-assured-automation-suite'
 
 const SKIP_FILES = new Set(['environment.properties', 'executor.json'])
 

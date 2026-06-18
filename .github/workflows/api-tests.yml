@@ -1,21 +1,10 @@
-name: API Tests
+name: Rest Assured Automation Suite
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      profile:
-        description: Test profile to run
-        required: true
-        default: full
-        type: choice
-        options:
-          - full
-          - owners
-          - pets
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,7 +19,7 @@ env:
 
 jobs:
   test:
-    name: API — full (CI gate)
+    name: Rest Assured — full (CI gate)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -62,7 +51,7 @@ jobs:
           echo "Petclinic API did not become ready in time" >&2
           exit 1
 
-      - name: Run API tests
+      - name: Run test suite
         env:
           CI: "true"
         run: mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}"
@@ -81,64 +70,6 @@ jobs:
         with:
           name: surefire-reports-api
           path: target/surefire-reports/
-          if-no-files-found: ignore
-
-  test-manual:
-    name: API — ${{ github.event.inputs.profile || 'skipped' }}
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    services:
-      petclinic:
-        image: springcommunity/spring-petclinic-rest:latest
-        ports:
-          - 9966:9966
-    steps:
-      - name: Checkout test suite
-        uses: actions/checkout@v5
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-          cache: maven
-
-      - name: Verify Petclinic API is reachable
-        run: |
-          for attempt in $(seq 1 30); do
-            if curl -sf "${API_BASE_URI%/api}/actuator/health" | grep -q '"status":"UP"'; then
-              echo "Petclinic API is ready"
-              exit 0
-            fi
-            echo "Waiting for Petclinic API... (${attempt}/30)"
-            sleep 10
-          done
-          echo "Petclinic API did not become ready in time" >&2
-          exit 1
-
-      - name: Run API tests — selected profile
-        env:
-          CI: "true"
-        run: |
-          case "${{ github.event.inputs.profile }}" in
-            owners)
-              mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}" -Dtest=OwnersApiTest
-              ;;
-            pets)
-              mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}" -Dtest=PetsApiTest
-              ;;
-            *)
-              mvn -B clean test -Denv=dev -Dapi.base.uri="${API_BASE_URI}"
-              ;;
-          esac
-
-      - name: Upload Allure results
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: allure-results-api-${{ github.event.inputs.profile }}
-          path: target/allure-results/
           if-no-files-found: ignore
 
   publish-pages:

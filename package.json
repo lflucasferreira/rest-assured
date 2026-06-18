@@ -2,7 +2,7 @@
   "name": "petclinic-api-tests",
   "version": "1.0.0",
   "private": true,
-  "description": "Rest Assured API test automation for Spring Petclinic REST",
+  "description": "Rest Assured Automation Suite for Spring Petclinic REST",
   "scripts": {
     "slides": "npx serve . -p 3335",
     "slides:open": "npx serve . -p 3335 & sleep 1 && open http://localhost:3335/docs/",

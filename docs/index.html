@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>rest-assured — Spring Petclinic API Test Suite</title>
-    <meta name="description" content="Rest Assured API automation for Spring Petclinic REST. Guides, slides, walkthroughs, and CI setup." />
-    <link rel="icon" href="slides/assets/rest-assured-logo.svg" type="image/svg+xml" />
+    <title>rest-assured — Rest Assured Automation Suite</title>
+    <meta name="description" content="Rest Assured Automation Suite for Spring Petclinic REST. Guides, slides, and CI setup." />
+    <link rel="icon" href="slides/assets/rest-assured-logo-dark.png" type="image/png" data-ra-favicon="slides/assets/" />
     <script>
       (function () {
         var path = location.pathname
@@ -39,11 +39,15 @@
     <link rel="stylesheet" href="slides/css/themes.css" />
     <link rel="stylesheet" href="slides/css/theme-toggle.css" />
     <link rel="stylesheet" href="slides/css/landing.css" />
+    <link rel="stylesheet" href="slides/css/ra-logo.css" />
   </head>
   <body>
     <header>
       <a class="brand" href=".">
-        <img src="slides/assets/rest-assured-logo.svg" alt="Rest Assured" />
+        <span class="ra-logo ra-logo--guide">
+          <img class="ra-logo__img ra-logo__img--light" src="slides/assets/rest-assured-logo-light.png" alt="Rest Assured" />
+          <img class="ra-logo__img ra-logo__img--dark" src="slides/assets/rest-assured-logo-dark.png" alt="" aria-hidden="true" />
+        </span>
         rest-assured
       </a>
       <nav>
@@ -60,29 +64,28 @@
 
     <main>
       <section class="hero">
-        <img class="hero-logo" src="slides/assets/rest-assured-logo.svg" alt="Rest Assured" />
-        <h1>API <span>Test Automation</span></h1>
+        <span class="ra-logo ra-logo--hero hero-logo-wrap" role="img" aria-label="Rest Assured">
+          <img class="ra-logo__img ra-logo__img--light" src="slides/assets/rest-assured-logo-light.png" alt="" />
+          <img class="ra-logo__img ra-logo__img--dark" src="slides/assets/rest-assured-logo-dark.png" alt="" />
+        </span>
+        <h1>Rest Assured <span>Automation Suite</span></h1>
         <p>Rest Assured + JUnit 5 suite for Spring Petclinic REST — owners, pets, flows, WireMock, contracts, and negative paths. CI runs against Dockerized API on every push to main.</p>
         <div class="badges">
           <a href="https://github.com/lflucasferreira/rest-assured/actions/workflows/api-tests.yml" target="_blank" rel="noopener">
-            <img src="https://github.com/lflucasferreira/rest-assured/actions/workflows/api-tests.yml/badge.svg" alt="API Tests CI &amp; Pages" />
+            <img src="https://github.com/lflucasferreira/rest-assured/actions/workflows/api-tests.yml/badge.svg" alt="Rest Assured Automation Suite CI &amp; Pages" />
           </a>
         </div>
       </section>
 
       <div class="cards cards--inline" aria-label="Documentation">
         <a class="card" href="complete-guide.html">
-          <img class="card-icon" src="slides/assets/rest-assured-logo.svg" alt="" aria-hidden="true" />
+          <span class="ra-logo ra-logo--card" aria-hidden="true">
+            <img class="ra-logo__img ra-logo__img--light" src="slides/assets/rest-assured-logo-light.png" alt="" />
+            <img class="ra-logo__img ra-logo__img--dark" src="slides/assets/rest-assured-logo-dark.png" alt="" />
+          </span>
           <h2>Complete Guide</h2>
           <p>Setup, project structure, Maven commands, clients, schemas, and Allure reporting.</p>
           <span class="card-arrow">↗ complete-guide.html</span>
-        </a>
-
-        <a class="card" href="en/README.md">
-          <img class="card-icon" src="slides/assets/icons/github.svg" alt="" aria-hidden="true" />
-          <h2>Walkthroughs</h2>
-          <p>Block-by-block explanation of every test class — English and Português.</p>
-          <span class="card-arrow">↗ en/README.md · pt/README.md</span>
         </a>
 
         <a class="card" href="slides/index.html">
@@ -92,11 +95,11 @@
           <span class="card-arrow">↗ slides/index.html</span>
         </a>
 
-        <a class="card" href="https://lflucasferreira.github.io/rest-assured/" target="_blank" rel="noopener">
+        <a class="card" href="report/index.html">
           <img class="card-icon" src="slides/assets/icons/allure.svg" alt="" aria-hidden="true" />
           <h2>Report</h2>
-          <p>Full-suite API Allure report from CI — updated on every push to main.</p>
-          <span class="card-arrow">↗ GitHub Pages · Allure</span>
+          <p>Full-suite Allure report from CI — updated on every push to main.</p>
+          <span class="card-arrow">↗ report/index.html</span>
         </a>
       </div>
     </main>

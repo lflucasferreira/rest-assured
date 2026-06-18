@@ -1,0 +1,112 @@
+/**
+ * Rest Assured brand logos — theme-aware swap
+ * Light: GitHub org avatar (black + green globe)
+ * Dark: same avatar + upper-left backlight (black wedge readable on dark UI)
+ */
+
+.ra-logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.ra-logo--card {
+  align-self: flex-start;
+  justify-content: flex-start;
+  width: auto;
+}
+
+.ra-logo__img {
+  object-fit: contain;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.ra-logo__img--dark {
+  display: none;
+}
+
+[data-theme='dark'] .ra-logo {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Soft glow behind the upper-left diagonal (black wedge of the GitHub avatar) */
+[data-theme='dark'] .ra-logo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 88%;
+  height: 88%;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 95% 95% at 24% 24%,
+    rgba(255, 255, 255, 0.62) 0%,
+    rgba(240, 248, 240, 0.38) 22%,
+    rgba(200, 230, 200, 0.18) 42%,
+    rgba(69, 186, 75, 0.06) 58%,
+    transparent 72%
+  );
+  box-shadow:
+    -2px -2px 14px rgba(255, 255, 255, 0.22),
+    0 0 20px rgba(180, 220, 180, 0.15);
+}
+
+[data-theme='dark'] .ra-logo__img--light {
+  display: block;
+}
+
+[data-theme='dark'] .ra-logo__img--dark {
+  display: none;
+}
+
+.brand .ra-logo__img {
+  width: 26px;
+  height: 26px;
+}
+
+.ra-logo--hero .ra-logo__img {
+  width: 72px;
+  height: 72px;
+}
+
+.ra-logo--hero {
+  margin: 0 auto 1.5rem;
+}
+
+.ra-logo--card .ra-logo__img {
+  width: 32px;
+  height: 32px;
+}
+
+.ra-logo--guide .ra-logo__img {
+  width: 28px;
+  height: 28px;
+}
+
+.ra-logo--guide-lg .ra-logo__img {
+  width: 64px;
+  height: 64px;
+}
+
+[data-theme='dark'] .hero-logo-wrap.ra-logo--hero .ra-logo__img--light {
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.35));
+}
+
+[data-theme='light'] .hero-logo-wrap.ra-logo--hero .ra-logo__img--light {
+  filter: drop-shadow(0 4px 16px rgba(26, 35, 50, 0.12));
+}
+
+.reveal .logo-wrap .ra-logo__img {
+  width: 72px;
+  height: 72px;
+}
+
+.card > .ra-logo--card {
+  flex-shrink: 0;
+}

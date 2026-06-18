@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rest Assured — Introdução &amp; Instalação</title>
-    <meta name="description" content="Apresentação introdutória sobre Rest Assured: API testing, clients, JUnit 5 e Spring Petclinic." />
-    <link rel="icon" href="assets/rest-assured-logo.svg" type="image/svg+xml" />
+    <meta name="description" content="Apresentação introdutória — Rest Assured Automation Suite: clients, JUnit 5 e Spring Petclinic." />
+    <link rel="icon" href="assets/rest-assured-logo-dark.png" type="image/png" data-ra-favicon="assets/" />
     <script>
       (function () {
         var path = location.pathname
@@ -42,6 +42,7 @@
     <link rel="stylesheet" href="css/theme-rest-assured.css" />
     <link rel="stylesheet" href="css/theme-light.css" />
     <link rel="stylesheet" href="css/icons.css" />
+    <link rel="stylesheet" href="css/ra-logo.css" />
   </head>
   <body>
     <button type="button" class="theme-toggle theme-toggle--floating" aria-label="Toggle theme">
@@ -55,10 +56,13 @@
 
         <section class="slide-title" data-auto-animate>
           <div class="logo-wrap">
-            <img src="assets/rest-assured-logo.svg" alt="Rest Assured" width="72" height="72" />
+            <span class="ra-logo">
+              <img class="ra-logo__img ra-logo__img--light" src="assets/rest-assured-logo-light.png" alt="Rest Assured" width="72" height="72" />
+              <img class="ra-logo__img ra-logo__img--dark" src="assets/rest-assured-logo-dark.png" alt="" width="72" height="72" aria-hidden="true" />
+            </span>
             <span class="wordmark">Rest Assured</span>
           </div>
-          <h1>Testes de API em Java</h1>
+          <h1>Rest Assured Automation Suite</h1>
           <p class="subtitle">Instalação, clients, schemas, WireMock e CI</p>
           <span class="badge">Automação · Java 17 · Spring Petclinic REST</span>
         </section>
@@ -205,7 +209,7 @@ NetworkInspector.assertResponseSequenceContains(networkCapture, "/owners", "/pet
             <li><a href="../index.html">Hub de documentação</a></li>
             <li><a href="../en/README.md">Walkthroughs EN</a> · <a href="../pt/README.md">PT</a></li>
             <li><a href="../complete-guide.html">Complete Guide</a></li>
-            <li><a href="../api-testing-strategy.md">API testing strategy</a></li>
+            <li><a href="../api-testing-strategy.md">Rest Assured testing strategy</a></li>
           </ul>
         </section>
 

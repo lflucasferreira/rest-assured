@@ -1,6 +1,6 @@
 # Rest Assured — Slides
 
-Apresentação Reveal.js sobre Rest Assured (API testing, clients, JUnit 5, rest-assured Petclinic).
+Apresentação Reveal.js do Rest Assured Automation Suite (clients, JUnit 5, Spring Petclinic REST).
 
 ## Arquivos
 
@@ -8,7 +8,9 @@ Apresentação Reveal.js sobre Rest Assured (API testing, clients, JUnit 5, rest
 |---------|-----------|
 | `index.html` | Apresentação interativa (Reveal.js) |
 | `css/theme-rest-assured.css` | Tema visual Rest Assured |
-| `assets/rest-assured-logo.svg` | Logo do projeto |
+| `assets/rest-assured-logo-light.png` | Logo original — [GitHub org avatar](https://avatars.githubusercontent.com/u/19369327?v=4) |
+| `assets/rest-assured-logo-dark.png` | Variante site (reserva) — [rest-assured.io](https://rest-assured.io/img/logo-transparent.png) |
+| `css/ra-logo.css` | Troca light/dark + halo iluminado no canto superior esquerdo (dark mode) |
 | `assets/icons/` | Ícones de marcas (Java, Maven, Docker, Git, etc.) via [Simple Icons](https://simpleicons.org/) |
 | `css/icons.css` | Estilos compartilhados para ícones em guias e slides |
 

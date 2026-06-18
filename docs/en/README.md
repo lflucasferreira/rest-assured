@@ -1,6 +1,6 @@
-# Spring Petclinic API Tests — Training Documentation
+# Rest Assured Automation Suite — Training Documentation
 
-Instructional material that explains **block by block** each test class in the project. Ideal for new students learning Rest Assured, JUnit 5, and API test automation in Java.
+Instructional material that explains **block by block** each test class in the project. Ideal for new students learning Rest Assured, JUnit 5, and the Rest Assured Automation Suite in Java.
 
 Each document links to the corresponding test file with a relative path.
 

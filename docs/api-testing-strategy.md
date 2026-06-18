@@ -1,4 +1,4 @@
-# API Testing Strategy — Spring Petclinic REST
+# Rest Assured Testing Strategy — Spring Petclinic REST
 
 This Rest Assured project validates the [Spring Petclinic REST](https://github.com/spring-petclinic/spring-petclinic-rest) API exclusively through **HTTP clients**, **POJO models**, and **JSON schema contracts**. There are no browser or UI tests in this repository.
 

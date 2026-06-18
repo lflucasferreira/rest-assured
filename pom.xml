@@ -7,8 +7,8 @@
     <groupId>com.portfolio.petclinic</groupId>
     <artifactId>petclinic-api-tests</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Spring Petclinic API Tests</name>
-    <description>REST Assured API test automation framework for Spring Petclinic REST</description>
+    <name>Rest Assured Automation Suite</name>
+    <description>Rest Assured automation suite for Spring Petclinic REST</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

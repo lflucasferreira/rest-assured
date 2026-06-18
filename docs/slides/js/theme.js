@@ -30,6 +30,12 @@
       }
     }
 
+    const favicon = document.querySelector('link[data-ra-favicon]')
+    if (favicon) {
+      const prefix = favicon.getAttribute('data-ra-favicon') || ''
+      favicon.href = `${prefix}rest-assured-logo-light.png`
+    }
+
     document.querySelectorAll('.theme-toggle').forEach((btn) => {
       btn.setAttribute('aria-label', theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme')
       btn.setAttribute('title', theme === 'light' ? 'Dark theme' : 'Light theme')
